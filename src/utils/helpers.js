@@ -340,6 +340,27 @@ export function throttle(func, limit) {
     };
 }
 
+/**
+ * 保存最高分
+ * @param {number} score - 分数
+ */
+export function saveHighScore(score) {
+    const currentHighScore = loadHighScore();
+    if (score > currentHighScore) {
+        Storage.save('highScore', score);
+        return true; // 新记录
+    }
+    return false;
+}
+
+/**
+ * 读取最高分
+ * @returns {number} 最高分
+ */
+export function loadHighScore() {
+    return Storage.load('highScore', 0);
+}
+
 export default {
     random,
     randomInt,
@@ -356,6 +377,8 @@ export default {
     createScreenShake,
     formatTime,
     formatScore,
+    saveHighScore,
+    loadHighScore,
     Storage,
     EventEmitter,
     debounce,

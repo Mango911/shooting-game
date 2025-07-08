@@ -4,7 +4,7 @@
  */
 
 import { GAME_CONFIG } from '../config/gameConfig.js';
-import { Bullet } from './Bullet.js';
+import Bullet from './Bullet.js';
 
 // 敌机基类
 export class Enemy {
