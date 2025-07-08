@@ -60,7 +60,11 @@ export class GameStateManager {
      */
     onEnterStart() {
         // 显示开始界面，可以添加背景音乐等
-        this.game.audioManager.stopAll();
+        if (this.game.audioManager && typeof this.game.audioManager.stopAll === 'function') {
+            this.game.audioManager.stopAll();
+        } else if (this.game.audioManager && typeof this.game.audioManager.stopBackgroundMusic === 'function') {
+            this.game.audioManager.stopBackgroundMusic();
+        }
         console.log('🏁 游戏进入开始状态');
     }
 
@@ -69,7 +73,11 @@ export class GameStateManager {
      */
     onEnterPlaying() {
         // 开始背景音乐
-        this.game.audioManager.playBackground();
+        if (this.game.audioManager && typeof this.game.audioManager.playBackground === 'function') {
+            this.game.audioManager.playBackground();
+        } else if (this.game.audioManager && typeof this.game.audioManager.startBackgroundMusic === 'function') {
+            this.game.audioManager.startBackgroundMusic();
+        }
         console.log('🎮 游戏开始');
     }
 
@@ -78,7 +86,11 @@ export class GameStateManager {
      */
     onEnterPaused() {
         // 暂停所有音效
-        this.game.audioManager.pauseBackground();
+        if (this.game.audioManager && typeof this.game.audioManager.pauseBackground === 'function') {
+            this.game.audioManager.pauseBackground();
+        } else if (this.game.audioManager && typeof this.game.audioManager.stopBackgroundMusic === 'function') {
+            this.game.audioManager.stopBackgroundMusic();
+        }
         console.log('⏸️ 游戏暂停');
     }
 
@@ -87,7 +99,11 @@ export class GameStateManager {
      */
     onEnterGameOver() {
         // 停止音乐，检查最高分
-        this.game.audioManager.stopAll();
+        if (this.game.audioManager && typeof this.game.audioManager.stopAll === 'function') {
+            this.game.audioManager.stopAll();
+        } else if (this.game.audioManager && typeof this.game.audioManager.stopBackgroundMusic === 'function') {
+            this.game.audioManager.stopBackgroundMusic();
+        }
         this.checkAndSaveHighScore();
         console.log('💀 游戏结束');
     }
@@ -131,7 +147,11 @@ export class GameStateManager {
     resumeGame() {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PAUSED) {
             this.setState(GAME_CONFIG.GAME_STATES.PLAYING);
-            this.game.audioManager.resumeBackground();
+            if (this.game.audioManager && typeof this.game.audioManager.resumeBackground === 'function') {
+                this.game.audioManager.resumeBackground();
+            } else if (this.game.audioManager && typeof this.game.audioManager.startBackgroundMusic === 'function') {
+                this.game.audioManager.startBackgroundMusic();
+            }
         }
     }
 
