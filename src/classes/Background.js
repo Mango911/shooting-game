@@ -213,6 +213,11 @@ export class Background {
      * @param {CanvasRenderingContext2D} ctx
      */
     renderNebula(ctx) {
+        // 检查canvas尺寸是否有效
+        if (!this.canvas.width || !this.canvas.height || this.canvas.width <= 0 || this.canvas.height <= 0) {
+            return;
+        }
+
         ctx.save();
 
         // 创建星云渐变
