@@ -11,7 +11,6 @@ class AudioManager {
         // 使用Web Audio API创建合成音效
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            console.log('AudioContext创建成功:', this.audioContext.state);
             
             // 预生成音效
             this.createShootSound();
@@ -19,7 +18,6 @@ class AudioManager {
             this.createPowerUpSound();
             this.createHitSound();
             this.createBackgroundMusic();
-            console.log('音效创建完成');
         } catch (error) {
             console.error('音频初始化失败:', error);
             this.muted = true; // 如果音频失败，设为静音模式
@@ -186,15 +184,10 @@ class AudioManager {
 
 class Game {
     constructor() {
-        console.log('开始初始化Game类...');
         this.canvas = document.getElementById('gameCanvas');
-        console.log('Canvas元素:', this.canvas);
         this.ctx = this.canvas.getContext('2d');
-        console.log('Canvas上下文:', this.ctx);
         this.gameState = 'start'; // 'start', 'playing', 'paused', 'gameOver'
-        console.log('正在初始化AudioManager...');
         this.audioManager = new AudioManager();
-        console.log('AudioManager初始化完成');
         this.score = 0;
         this.lives = 3;
         this.level = 1;
@@ -220,13 +213,9 @@ class Game {
         // 最高分记录
         this.highScore = this.loadHighScore();
         
-        console.log('正在初始化星星...');
         this.initializeStars();
-        console.log('正在设置事件监听器...');
         this.setupEventListeners();
-        console.log('正在启动游戏循环...');
         this.gameLoop();
-        console.log('Game构造函数执行完成！');
     }
 
     initializeStars() {
@@ -263,11 +252,7 @@ class Game {
         });
 
         // 按钮事件
-        console.log('正在设置开始按钮事件...');
-        const startBtn = document.getElementById('startBtn');
-        console.log('开始按钮元素:', startBtn);
-        startBtn.addEventListener('click', () => {
-            console.log('开始按钮被点击！');
+        document.getElementById('startBtn').addEventListener('click', () => {
             this.startGame();
         });
 
@@ -288,14 +273,10 @@ class Game {
     }
 
     startGame() {
-        console.log('startGame方法被调用');
         this.gameState = 'playing';
-        console.log('游戏状态设置为playing');
         document.getElementById('gameStart').classList.add('hidden');
         document.getElementById('gameOver').classList.add('hidden');
-        console.log('UI元素隐藏完成');
         this.audioManager.startBackgroundMusic();
-        console.log('背景音乐启动');
     }
 
     restartGame() {
@@ -1274,10 +1255,8 @@ class Particle {
 
 // 初始化游戏
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM已加载，正在初始化游戏...');
     try {
         const game = new Game();
-        console.log('游戏初始化成功！');
     } catch (error) {
         console.error('游戏初始化失败:', error);
     }
