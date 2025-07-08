@@ -21,6 +21,10 @@ export class Game {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         
+        // 设置canvas尺寸
+        this.canvas.width = GAME_CONFIG.CANVAS.WIDTH;
+        this.canvas.height = GAME_CONFIG.CANVAS.HEIGHT;
+        
         // 游戏状态
         this.gameState = GAME_CONFIG.GAME_STATES.START;
         this.score = 0;
@@ -39,6 +43,9 @@ export class Game {
         this.screenShake = null;
         this.fps = 60;
         this.lastFrameTime = 0;
+        
+        // 游戏循环控制
+        this.gameLoopRunning = false;
         
         // 初始化所有管理器和游戏对象
         this.initializeGame();
@@ -287,6 +294,35 @@ export class Game {
      */
     start() {
         this.stateManager.startGame();
+        this.startGameLoop();
+    }
+
+    /**
+     * 启动游戏主循环
+     */
+    startGameLoop() {
+        // 防止重复启动
+        if (this.gameLoopRunning) return;
+        
+        this.gameLoopRunning = true;
+        
+        const loop = (currentTime) => {
+            if (this.gameLoopRunning) {
+                this.gameLoop(currentTime);
+                requestAnimationFrame(loop);
+            }
+        };
+        
+        requestAnimationFrame(loop);
+        console.log('🔄 游戏主循环已启动');
+    }
+
+    /**
+     * 停止游戏主循环
+     */
+    stopGameLoop() {
+        this.gameLoopRunning = false;
+        console.log('⏹️ 游戏主循环已停止');
     }
 
     /**
@@ -329,6 +365,9 @@ export class Game {
      * 销毁游戏，清理所有资源
      */
     destroy() {
+        // 停止游戏循环
+        this.stopGameLoop();
+        
         // 清理管理器
         this.inputManager?.destroy();
         this.audioManager?.destroy();

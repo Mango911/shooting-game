@@ -24,6 +24,8 @@ export const GAME_CONFIG = {
   // 敌机配置
   ENEMY: {
     SPAWN_RATE: 2000, // 毫秒
+    MIN_SPAWN_RATE: 400, // 最小生成间隔
+    BOSS_SPAWN_RATE: 30000, // Boss生成间隔
     BOSS_KILL_THRESHOLD: 20, // 每20个敌机生成一个Boss
     TYPES: {
       NORMAL: {
@@ -94,8 +96,7 @@ export const GAME_CONFIG = {
   // 关卡配置
   LEVEL: {
     SCORE_PER_LEVEL: 100,
-    DIFFICULTY_INCREASE_RATE: 0.1,
-    MIN_SPAWN_RATE: 400
+    DIFFICULTY_INCREASE_RATE: 0.1
   },
 
   // 游戏状态
@@ -103,7 +104,8 @@ export const GAME_CONFIG = {
     START: 'start',
     PLAYING: 'playing',
     PAUSED: 'paused',
-    GAME_OVER: 'gameOver'
+    GAME_OVER: 'gameOver',
+    LEVEL_UP: 'levelUp'
   }
 };
 
