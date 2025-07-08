@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空射击游戏 - Space Shooter</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="一个功能丰富的HTML5太空射击游戏">
+    <meta name="keywords" content="游戏,射击,HTML5,Canvas,JavaScript">
+    <meta name="author" content="Mango">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 太空射击游戏</h1>
+            <div class="controls">
+                <button id="muteBtn">🔊 音效</button>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30">
+                <span id="volumeValue">30%</span>
+            </div>
+        </header>
+        
+        <main>
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="game-info">
+                <div class="info-section">
+                    <h3>🎮 游戏操作</h3>
+                    <ul>
+                        <li><kbd>WASD</kbd> 或 <kbd>方向键</kbd> - 移动飞机</li>
+                        <li><kbd>空格键</kbd> - 射击</li>
+                        <li><kbd>Enter</kbd> - 开始/重新开始</li>
+                        <li><kbd>ESC</kbd> - 暂停游戏</li>
+                    </ul>
+                </div>
+                
+                <div class="info-section">
+                    <h3>🎁 道具系统</h3>
+                    <div class="powerup-list">
+                        <div class="powerup-item">
+                            <span class="powerup-icon">❤</span>
+                            <span>生命恢复</span>
+                        </div>
+                        <div class="powerup-item">
+                            <span class="powerup-icon">🛡</span>
+                            <span>护盾保护</span>
+                        </div>
+                        <div class="powerup-item">
+                            <span class="powerup-icon">⚡</span>
+                            <span>快速射击</span>
+                        </div>
+                        <div class="powerup-item">
+                            <span class="powerup-icon">××</span>
+                            <span>双重射击</span>
+                        </div>
+                        <div class="powerup-item">
+                            <span class="powerup-icon">◊◊◊</span>
+                            <span>三重射击</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>👾 敌机类型</h3>
+                    <div class="enemy-list">
+                        <div class="enemy-item">
+                            <span class="enemy-icon normal">▼</span>
+                            <span>普通敌机 (10分)</span>
+                        </div>
+                        <div class="enemy-item">
+                            <span class="enemy-icon fast">◆</span>
+                            <span>快速敌机 (15分)</span>
+                        </div>
+                        <div class="enemy-item">
+                            <span class="enemy-icon heavy">■</span>
+                            <span>重型敌机 (30分)</span>
+                        </div>
+                        <div class="enemy-item">
+                            <span class="enemy-icon zigzag">✦</span>
+                            <span>之字敌机 (25分)</span>
+                        </div>
+                        <div class="enemy-item">
+                            <span class="enemy-icon boss">♛</span>
+                            <span>Boss敌机 (200分)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="stats">
+                <div id="gameStats">
+                    <p>📊 游戏统计：</p>
+                    <p>版本: v2.0.0 | 引擎: Canvas 2D | 音频: Web Audio API</p>
+                </div>
+            </div>
+            
+            <div class="credits">
+                <p>🎨 由 Mango 开发 | 使用现代前端工程化技术构建</p>
+                <p>🔗 <a href="https://github.com/Mango911/shooting-game" target="_blank" rel="noopener">GitHub 源码</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 游戏加载提示 -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>🚀 游戏加载中...</h2>
+            <p>正在初始化游戏系统</p>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p id="loadingText">加载音频系统...</p>
+        </div>
+    </div>
+
+    <!-- 错误提示 -->
+    <div id="errorScreen" class="error-screen" style="display: none;">
+        <div class="error-content">
+            <h2>⚠️ 游戏加载失败</h2>
+            <p id="errorMessage">发生了未知错误</p>
+            <button id="retryBtn" class="retry-btn">🔄 重试</button>
+        </div>
+    </div>
+
+    <!-- 主游戏脚本 -->
+    <script type="module" src="../src/main.js"></script>
+</body>
+</html>

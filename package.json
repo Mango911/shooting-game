@@ -1,0 +1,41 @@
+{
+  "name": "shooting-game",
+  "version": "2.0.0",
+  "description": "一个功能丰富的HTML5飞行射击游戏",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8080",
+    "build": "npm run copy-assets",
+    "copy-assets": "cp -r assets/* public/assets/ 2>/dev/null || true",
+    "clean": "rm -rf dist/*",
+    "format": "prettier --write 'src/**/*.js'",
+    "lint": "eslint src/**/*.js"
+  },
+  "keywords": [
+    "game",
+    "shooting",
+    "html5",
+    "canvas",
+    "javascript",
+    "web-game"
+  ],
+  "author": "Mango",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mango911/shooting-game.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mango911/shooting-game/issues"
+  },
+  "homepage": "https://mango911.github.io/shooting-game/"
+} 
