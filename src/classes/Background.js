@@ -237,16 +237,16 @@ export class Background {
             // 创建星云渐变
             const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
 
-        // 动态透明度
-        const alpha = Math.floor((Math.sin(this.nebulaPhase) + 1) * 5 + 5).toString(16);
-        
-        gradient.addColorStop(0, `#4a69bd${alpha}`);
-        gradient.addColorStop(0.3, `#1e3799${alpha}`);
-        gradient.addColorStop(0.7, `#0c2461${alpha}`);
-        gradient.addColorStop(1, 'transparent');
+                    // 动态透明度
+            const alpha = Math.floor((Math.sin(this.nebulaPhase) + 1) * 5 + 5).toString(16).padStart(2, '0');
+            
+            gradient.addColorStop(0, `#4a69bd${alpha}`);
+            gradient.addColorStop(0.3, `#1e3799${alpha}`);
+            gradient.addColorStop(0.7, `#0c2461${alpha}`);
+            gradient.addColorStop(1, 'transparent');
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
             // 添加第二层星云
             const center2X = this.canvas.width * 0.2;
@@ -257,7 +257,7 @@ export class Background {
             if (isFinite(center2X) && isFinite(center2Y) && isFinite(radius2) && radius2 > 0) {
                 const gradient2 = ctx.createRadialGradient(center2X, center2Y, 0, center2X, center2Y, radius2);
 
-                const alpha2 = Math.floor((Math.sin(this.nebulaPhase + Math.PI) + 1) * 3 + 3).toString(16);
+                const alpha2 = Math.floor((Math.sin(this.nebulaPhase + Math.PI) + 1) * 3 + 3).toString(16).padStart(2, '0');
                 
                 gradient2.addColorStop(0, `#8c7ae6${alpha2}`);
                 gradient2.addColorStop(0.4, `#6c5ce7${alpha2}`);

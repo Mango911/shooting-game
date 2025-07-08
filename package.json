@@ -5,13 +5,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "python3 -m http.server 8000",
+    "dev": "npm run build && python3 -m http.server 8000",
+    "dev:watch": "tsc --watch & python3 -m http.server 8000",
     "start": "python3 -m http.server 8080",
-    "build": "npm run copy-assets",
-    "copy-assets": "cp -r assets/* public/assets/ 2>/dev/null || true",
+    "build": "tsc && npm run copy-assets",
+    "build:prod": "tsc --build --clean && tsc && npm run copy-assets",
+    "copy-assets": "cp -r public/* dist/ 2>/dev/null || true",
     "clean": "rm -rf dist/*",
-    "format": "prettier --write 'src/**/*.js'",
-    "lint": "eslint src/**/*.js"
+    "format": "prettier --write 'src/**/*.ts'",
+    "lint": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "game",
@@ -24,8 +27,11 @@
   "author": "Mango",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^24.0.10",
+    "eslint": "^8.0.0",
     "prettier": "^3.0.0",
-    "eslint": "^8.0.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -38,4 +44,4 @@
     "url": "https://github.com/Mango911/shooting-game/issues"
   },
   "homepage": "https://mango911.github.io/shooting-game/"
-} 
+}
