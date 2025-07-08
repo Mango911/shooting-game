@@ -13,6 +13,14 @@
             <div class="score-panel">
                 <span>分数: <span id="score">0</span></span>
                 <span>生命: <span id="lives">3</span></span>
+                <span>关卡: <span id="level">1</span></span>
+            </div>
+            <div class="power-up-status" id="powerUpStatus">
+                <!-- 道具状态将在这里动态显示 -->
+            </div>
+            <div class="audio-controls">
+                <button id="muteBtn" class="audio-btn">🔊</button>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30" class="volume-slider">
             </div>
         </div>
         <div class="game-canvas-container">
@@ -20,6 +28,8 @@
             <div id="gameOver" class="game-over-screen">
                 <h2>游戏结束</h2>
                 <p>最终得分: <span id="finalScore">0</span></p>
+                <p>最高分: <span id="highScore">0</span></p>
+                <p id="newHighScoreMsg" class="new-high-score hidden">🎉 恭喜！新的最高分记录！</p>
                 <button id="restartBtn">重新开始</button>
             </div>
             <div id="gameStart" class="game-start-screen">
