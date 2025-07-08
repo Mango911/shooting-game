@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打飞机小游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>打飞机小游戏</h1>
+            <div class="score-panel">
+                <span>分数: <span id="score">0</span></span>
+                <span>生命: <span id="lives">3</span></span>
+            </div>
+        </div>
+        <div class="game-canvas-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <div id="gameOver" class="game-over-screen">
+                <h2>游戏结束</h2>
+                <p>最终得分: <span id="finalScore">0</span></p>
+                <button id="restartBtn">重新开始</button>
+            </div>
+            <div id="gameStart" class="game-start-screen">
+                <h2>打飞机小游戏</h2>
+                <p>使用 WASD 或方向键移动飞机</p>
+                <p>按空格键射击</p>
+                <button id="startBtn">开始游戏</button>
+            </div>
+        </div>
+        <div class="game-instructions">
+            <p>📱 移动: WASD 或方向键 | 🔫 射击: 空格键 | ⏸️ 暂停: P键</p>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
