@@ -153,6 +153,9 @@ async function initGame() {
         // 创建游戏实例
         game = new Game(canvas);
         
+        // 设置为全局变量（调试用）
+        window.game = game;
+        
         // 初始化音频控制
         initAudioControls();
         
@@ -271,7 +274,6 @@ if (document.readyState === 'loading') {
 }
 
 // 导出给全局使用（调试用）
-window.game = game;
 window.retryGame = retryInit;
 
 console.log('📦 主模块加载完成'); 

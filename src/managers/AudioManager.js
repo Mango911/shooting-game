@@ -255,6 +255,19 @@ export class AudioManager {
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
     }
+
+    /**
+     * 销毁音频管理器
+     */
+    destroy() {
+        this.stopAll();
+        if (this.audioContext && this.audioContext.state !== 'closed') {
+            this.audioContext.close();
+        }
+        this.sounds = {};
+        this.audioContext = null;
+        console.log('🎵 音频管理器已销毁');
+    }
 }
 
 export default AudioManager; 
