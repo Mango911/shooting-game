@@ -198,10 +198,44 @@ export class AudioManager {
     }
 
     /**
+     * 播放背景音乐（别名）
+     */
+    playBackground() {
+        this.startBackgroundMusic();
+    }
+
+    /**
      * 停止播放背景音乐
      */
     stopBackgroundMusic() {
         this.backgroundMusic = false;
+    }
+
+    /**
+     * 暂停背景音乐
+     */
+    pauseBackground() {
+        this.backgroundMusic = false;
+    }
+
+    /**
+     * 恢复背景音乐
+     */
+    resumeBackground() {
+        if (!this.muted) {
+            this.startBackgroundMusic();
+        }
+    }
+
+    /**
+     * 停止所有音效
+     */
+    stopAll() {
+        this.stopBackgroundMusic();
+        // 停止所有正在播放的音效
+        if (this.audioContext && this.audioContext.state === 'running') {
+            // Web Audio API会自动清理已结束的音效
+        }
     }
 
     /**
