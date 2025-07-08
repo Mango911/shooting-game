@@ -214,17 +214,28 @@ export class Background {
      */
     renderNebula(ctx) {
         // 检查canvas尺寸是否有效
-        if (!this.canvas.width || !this.canvas.height || this.canvas.width <= 0 || this.canvas.height <= 0) {
+        if (!this.canvas.width || !this.canvas.height || 
+            this.canvas.width <= 0 || this.canvas.height <= 0 ||
+            !isFinite(this.canvas.width) || !isFinite(this.canvas.height)) {
             return;
         }
 
         ctx.save();
 
-        // 创建星云渐变
-        const gradient = ctx.createRadialGradient(
-            this.canvas.width * 0.7, this.canvas.height * 0.3, 0,
-            this.canvas.width * 0.7, this.canvas.height * 0.3, this.canvas.width * 0.8
-        );
+        try {
+            // 计算渐变参数并验证
+            const centerX = this.canvas.width * 0.7;
+            const centerY = this.canvas.height * 0.3;
+            const radius = this.canvas.width * 0.8;
+
+            // 确保所有值都是有限数字
+            if (!isFinite(centerX) || !isFinite(centerY) || !isFinite(radius) || radius <= 0) {
+                ctx.restore();
+                return;
+            }
+
+            // 创建星云渐变
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
 
         // 动态透明度
         const alpha = Math.floor((Math.sin(this.nebulaPhase) + 1) * 5 + 5).toString(16);
@@ -237,21 +248,29 @@ export class Background {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // 添加第二层星云
-        const gradient2 = ctx.createRadialGradient(
-            this.canvas.width * 0.2, this.canvas.height * 0.8, 0,
-            this.canvas.width * 0.2, this.canvas.height * 0.8, this.canvas.width * 0.6
-        );
+            // 添加第二层星云
+            const center2X = this.canvas.width * 0.2;
+            const center2Y = this.canvas.height * 0.8;
+            const radius2 = this.canvas.width * 0.6;
 
-        const alpha2 = Math.floor((Math.sin(this.nebulaPhase + Math.PI) + 1) * 3 + 3).toString(16);
-        
-        gradient2.addColorStop(0, `#8c7ae6${alpha2}`);
-        gradient2.addColorStop(0.4, `#6c5ce7${alpha2}`);
-        gradient2.addColorStop(0.8, `#2d3436${alpha2}`);
-        gradient2.addColorStop(1, 'transparent');
+            // 验证第二个渐变的参数
+            if (isFinite(center2X) && isFinite(center2Y) && isFinite(radius2) && radius2 > 0) {
+                const gradient2 = ctx.createRadialGradient(center2X, center2Y, 0, center2X, center2Y, radius2);
 
-        ctx.fillStyle = gradient2;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                const alpha2 = Math.floor((Math.sin(this.nebulaPhase + Math.PI) + 1) * 3 + 3).toString(16);
+                
+                gradient2.addColorStop(0, `#8c7ae6${alpha2}`);
+                gradient2.addColorStop(0.4, `#6c5ce7${alpha2}`);
+                gradient2.addColorStop(0.8, `#2d3436${alpha2}`);
+                gradient2.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = gradient2;
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+        } catch (error) {
+            console.warn('星云渲染错误:', error);
+        }
 
         ctx.restore();
     }

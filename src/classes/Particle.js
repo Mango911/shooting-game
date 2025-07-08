@@ -320,6 +320,14 @@ export class ParticleSystem {
     getParticleCount() {
         return this.particles.length;
     }
+
+    /**
+     * 销毁粒子系统
+     */
+    destroy() {
+        this.clear();
+        console.log('✨ 粒子系统已销毁');
+    }
 }
 
 export default ParticleSystem; 
