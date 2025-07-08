@@ -161,8 +161,8 @@ class Star {
  * 背景星空系统
  */
 export class Background {
-    constructor(canvas) {
-        this.canvas = canvas;
+    constructor(width, height) {
+        this.canvas = { width, height };
         this.stars = [];
         this.initStars();
         
