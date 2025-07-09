@@ -3,9 +3,15 @@
  * 负责游戏中所有音效和背景音乐的管理
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
 
 export class AudioManager {
+    public sounds: { [key: string]: () => void };
+    public backgroundMusic: boolean | null;
+    public muted: boolean;
+    public volume: number;
+    public audioContext: AudioContext;
+
     constructor() {
         this.sounds = {};
         this.backgroundMusic = null;
@@ -17,9 +23,9 @@ export class AudioManager {
     /**
      * 初始化音效系统
      */
-    initializeSounds() {
+    initializeSounds(): void {
         try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
             
             // 预生成音效
             this.createShootSound();
@@ -36,7 +42,7 @@ export class AudioManager {
     /**
      * 创建射击音效
      */
-    createShootSound() {
+    createShootSound(): void {
         this.sounds.shoot = () => {
             if (this.muted) return;
             const oscillator = this.audioContext.createOscillator();
@@ -59,7 +65,7 @@ export class AudioManager {
     /**
      * 创建爆炸音效
      */
-    createExplosionSound() {
+    createExplosionSound(): void {
         this.sounds.explosion = () => {
             if (this.muted) return;
             const oscillator = this.audioContext.createOscillator();
@@ -83,7 +89,7 @@ export class AudioManager {
     /**
      * 创建道具音效
      */
-    createPowerUpSound() {
+    createPowerUpSound(): void {
         this.sounds.powerUp = () => {
             if (this.muted) return;
             const oscillator = this.audioContext.createOscillator();
@@ -107,7 +113,7 @@ export class AudioManager {
     /**
      * 创建撞击音效
      */
-    createHitSound() {
+    createHitSound(): void {
         this.sounds.hit = () => {
             if (this.muted) return;
             const oscillator = this.audioContext.createOscillator();
@@ -131,7 +137,7 @@ export class AudioManager {
     /**
      * 创建背景音乐
      */
-    createBackgroundMusic() {
+    createBackgroundMusic(): void {
         this.sounds.backgroundMusic = () => {
             if (this.muted || this.backgroundMusic) return;
             
@@ -183,7 +189,7 @@ export class AudioManager {
      * 播放指定音效
      * @param {string} soundName - 音效名称
      */
-    play(soundName) {
+    play(soundName: string): void {
         if (this.sounds[soundName]) {
             this.sounds[soundName]();
         }
@@ -192,7 +198,7 @@ export class AudioManager {
     /**
      * 开始播放背景音乐
      */
-    startBackgroundMusic() {
+    startBackgroundMusic(): void {
         this.backgroundMusic = true;
         this.sounds.backgroundMusic();
     }
@@ -200,28 +206,28 @@ export class AudioManager {
     /**
      * 播放背景音乐（别名）
      */
-    playBackground() {
+    playBackground(): void {
         this.startBackgroundMusic();
     }
 
     /**
      * 停止播放背景音乐
      */
-    stopBackgroundMusic() {
+    stopBackgroundMusic(): void {
         this.backgroundMusic = false;
     }
 
     /**
      * 暂停背景音乐
      */
-    pauseBackground() {
+    pauseBackground(): void {
         this.backgroundMusic = false;
     }
 
     /**
      * 恢复背景音乐
      */
-    resumeBackground() {
+    resumeBackground(): void {
         if (!this.muted) {
             this.startBackgroundMusic();
         }
@@ -230,7 +236,7 @@ export class AudioManager {
     /**
      * 停止所有音效
      */
-    stopAll() {
+    stopAll(): void {
         this.stopBackgroundMusic();
         // 停止所有正在播放的音效
         if (this.audioContext && this.audioContext.state === 'running') {
@@ -241,7 +247,7 @@ export class AudioManager {
     /**
      * 切换静音状态
      */
-    toggleMute() {
+    toggleMute(): void {
         this.muted = !this.muted;
         if (this.muted) {
             this.stopBackgroundMusic();
@@ -252,14 +258,14 @@ export class AudioManager {
      * 设置音量
      * @param {number} volume - 音量值 (0-1)
      */
-    setVolume(volume) {
+    setVolume(volume: number): void {
         this.volume = Math.max(0, Math.min(1, volume));
     }
 
     /**
      * 销毁音频管理器
      */
-    destroy() {
+    destroy(): void {
         this.stopAll();
         if (this.audioContext && this.audioContext.state !== 'closed') {
             this.audioContext.close();

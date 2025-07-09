@@ -3,10 +3,12 @@
  * 处理游戏中所有的碰撞检测逻辑
  */
 
-import { createScreenShake } from '../utils/helpers.js';
+import {  createScreenShake  } from '../utils/helpers.js';
 
 export class CollisionManager {
-    constructor(game) {
+    public game: any;
+
+    constructor(game: any) {
         this.game = game;
         console.log('💥 碰撞管理器初始化完成');
     }
@@ -14,7 +16,7 @@ export class CollisionManager {
     /**
      * 检查所有碰撞
      */
-    checkAllCollisions() {
+    checkAllCollisions(): void {
         this.checkPlayerBulletEnemyCollisions();
         this.checkEnemyPlayerCollisions();
         this.checkEnemyBulletPlayerCollisions();
@@ -24,7 +26,7 @@ export class CollisionManager {
     /**
      * 检查玩家子弹与敌机的碰撞
      */
-    checkPlayerBulletEnemyCollisions() {
+    checkPlayerBulletEnemyCollisions(): void {
         for (let i = this.game.enemies.length - 1; i >= 0; i--) {
             const enemy = this.game.enemies[i];
             
@@ -47,7 +49,7 @@ export class CollisionManager {
      * @param {number} enemyIndex 
      * @param {number} bulletIndex 
      */
-    handleBulletHitEnemy(bullet, enemy, enemyIndex, bulletIndex) {
+    handleBulletHitEnemy(bullet: any, enemy: any, enemyIndex: number, bulletIndex: number): void {
         // 销毁子弹
         bullet.destroy();
         this.game.bullets.splice(bulletIndex, 1);
@@ -67,7 +69,7 @@ export class CollisionManager {
      * @param {Enemy} enemy 
      * @param {number} enemyIndex 
      */
-    handleEnemyDestroyed(enemy, enemyIndex) {
+    handleEnemyDestroyed(enemy: any, enemyIndex: number): void {
         // 增加分数
         this.game.score += enemy.score;
         this.game.enemiesKilled++;
@@ -88,7 +90,7 @@ export class CollisionManager {
      * 处理敌机受击
      * @param {Enemy} enemy 
      */
-    handleEnemyHit(enemy) {
+    handleEnemyHit(enemy: any): void {
         this.game.audioManager.play('hit');
         this.game.particleSystem.createFlashEffect(
             enemy.x + enemy.width / 2, 
@@ -100,7 +102,7 @@ export class CollisionManager {
      * 创建Boss摧毁特效
      * @param {Enemy} enemy 
      */
-    createBossDestroyEffect(enemy) {
+    createBossDestroyEffect(enemy: any): void {
         this.game.particleSystem.createBossExplosion(
             enemy.x + enemy.width / 2, 
             enemy.y + enemy.height / 2
@@ -112,7 +114,7 @@ export class CollisionManager {
      * 创建敌机摧毁特效
      * @param {Enemy} enemy 
      */
-    createEnemyDestroyEffect(enemy) {
+    createEnemyDestroyEffect(enemy: any): void {
         this.game.particleSystem.createExplosion(
             enemy.x + enemy.width / 2, 
             enemy.y + enemy.height / 2,
@@ -124,7 +126,7 @@ export class CollisionManager {
     /**
      * 检查敌机与玩家的碰撞
      */
-    checkEnemyPlayerCollisions() {
+    checkEnemyPlayerCollisions(): void {
         for (let i = this.game.enemies.length - 1; i >= 0; i--) {
             const enemy = this.game.enemies[i];
             
@@ -139,7 +141,7 @@ export class CollisionManager {
      * @param {Enemy} enemy 
      * @param {number} enemyIndex 
      */
-    handleEnemyHitPlayer(enemy, enemyIndex) {
+    handleEnemyHitPlayer(enemy: any, enemyIndex: number): void {
         this.handlePlayerHit();
         
         // Boss撞击后不会消失
@@ -151,7 +153,7 @@ export class CollisionManager {
     /**
      * 检查敌机子弹与玩家的碰撞
      */
-    checkEnemyBulletPlayerCollisions() {
+    checkEnemyBulletPlayerCollisions(): void {
         for (let i = this.game.enemyBullets.length - 1; i >= 0; i--) {
             const bullet = this.game.enemyBullets[i];
             
@@ -166,7 +168,7 @@ export class CollisionManager {
      * @param {Bullet} bullet 
      * @param {number} bulletIndex 
      */
-    handleEnemyBulletHitPlayer(bullet, bulletIndex) {
+    handleEnemyBulletHitPlayer(bullet: any, bulletIndex: number): void {
         // 销毁子弹
         bullet.destroy();
         this.game.enemyBullets.splice(bulletIndex, 1);
@@ -178,7 +180,7 @@ export class CollisionManager {
     /**
      * 处理玩家受击
      */
-    handlePlayerHit() {
+    handlePlayerHit(): void {
         if (this.game.player.invulnerable) return;
         
         if (this.game.player.shield) {
@@ -193,7 +195,7 @@ export class CollisionManager {
     /**
      * 处理护盾受击
      */
-    handleShieldHit() {
+    handleShieldHit(): void {
         this.game.player.shield = false;
         this.game.player.shieldEnd = 0;
         this.game.audioManager.play('hit');
@@ -211,7 +213,7 @@ export class CollisionManager {
     /**
      * 处理玩家受伤
      */
-    handlePlayerDamage() {
+    handlePlayerDamage(): void {
         this.game.player.health--;
         this.game.player.invulnerable = true;
         
@@ -238,7 +240,7 @@ export class CollisionManager {
     /**
      * 检查玩家与道具的碰撞
      */
-    checkPlayerPowerUpCollisions() {
+    checkPlayerPowerUpCollisions(): void {
         for (let i = this.game.powerUps.length - 1; i >= 0; i--) {
             const powerUp = this.game.powerUps[i];
             
@@ -253,7 +255,7 @@ export class CollisionManager {
      * @param {PowerUp} powerUp 
      * @param {number} powerUpIndex 
      */
-    handlePlayerCollectPowerUp(powerUp, powerUpIndex) {
+    handlePlayerCollectPowerUp(powerUp: any, powerUpIndex: number): void {
         // 应用道具效果
         this.game.player.applyPowerUp(powerUp.type);
         
@@ -277,7 +279,7 @@ export class CollisionManager {
      * @param {Object} obj2 
      * @returns {boolean}
      */
-    checkCollision(obj1, obj2) {
+    checkCollision(obj1: any, obj2: any): boolean {
         return obj1.x < obj2.x + obj2.width &&
                obj1.x + obj1.width > obj2.x &&
                obj1.y < obj2.y + obj2.height &&
@@ -290,7 +292,7 @@ export class CollisionManager {
      * @param {Object} obj2 - {x, y, radius}
      * @returns {boolean}
      */
-    checkCircleCollision(obj1, obj2) {
+    checkCircleCollision(obj1: any, obj2: any): boolean {
         const dx = (obj1.x + obj1.radius) - (obj2.x + obj2.radius);
         const dy = (obj1.y + obj1.radius) - (obj2.y + obj2.radius);
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -304,7 +306,7 @@ export class CollisionManager {
      * @param {Object} rect - {x, y, width, height}
      * @returns {boolean}
      */
-    checkPointRectCollision(x, y, rect) {
+    checkPointRectCollision(x: number, y: number, rect: any): boolean {
         return x >= rect.x && 
                x <= rect.x + rect.width && 
                y >= rect.y && 

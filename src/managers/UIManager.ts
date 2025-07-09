@@ -3,11 +3,18 @@
  * 处理游戏中所有UI界面的渲染
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
-import { loadHighScore } from '../utils/helpers.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
+import {  loadHighScore  } from '../utils/helpers.js';
 
 export class UIManager {
-    constructor(game) {
+    public game: any;
+    public ctx: CanvasRenderingContext2D;
+    public canvas: HTMLCanvasElement;
+    public titleAnimTime: number;
+    public flashTimer: number;
+    public uiAnimations: any[];
+
+    constructor(game: any) {
         this.game = game;
         this.ctx = game.ctx;
         this.canvas = game.canvas;
@@ -23,7 +30,7 @@ export class UIManager {
     /**
      * 渲染所有UI元素
      */
-    render() {
+    render(): void {
         this.updateAnimations();
         
         switch (this.game.gameState) {
@@ -50,7 +57,7 @@ export class UIManager {
     /**
      * 更新UI动画
      */
-    updateAnimations() {
+    updateAnimations(): void {
         this.titleAnimTime += 0.05;
         this.flashTimer += 0.1;
         
@@ -64,7 +71,7 @@ export class UIManager {
     /**
      * 渲染开始界面
      */
-    renderStartScreen() {
+    renderStartScreen(): void {
         // 背景渐变
         this.renderBackground();
         
@@ -84,7 +91,7 @@ export class UIManager {
     /**
      * 渲染背景
      */
-    renderBackground() {
+    renderBackground(): void {
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         gradient.addColorStop(0, '#0a0a0a');
         gradient.addColorStop(0.5, '#1a1a2e');
@@ -97,7 +104,7 @@ export class UIManager {
     /**
      * 渲染标题
      */
-    renderTitle() {
+    renderTitle(): void {
         const centerX = this.canvas.width / 2;
         const titleY = this.canvas.height * 0.3;
         
@@ -124,7 +131,7 @@ export class UIManager {
     /**
      * 渲染开始说明
      */
-    renderStartInstructions() {
+    renderStartInstructions(): void {
         const centerX = this.canvas.width / 2;
         let y = this.canvas.height * 0.5;
         
@@ -165,7 +172,7 @@ export class UIManager {
     /**
      * 渲染最高分
      */
-    renderHighScore() {
+    renderHighScore(): void {
         const highScore = loadHighScore();
         if (highScore > 0) {
             this.ctx.fillStyle = '#ffd700';
@@ -182,7 +189,7 @@ export class UIManager {
     /**
      * 渲染开始提示
      */
-    renderStartPrompt() {
+    renderStartPrompt(): void {
         const alpha = (Math.sin(this.flashTimer * 3) + 1) / 2;
         this.ctx.globalAlpha = alpha;
         
@@ -201,7 +208,7 @@ export class UIManager {
     /**
      * 渲染游戏UI
      */
-    renderGameUI() {
+    renderGameUI(): void {
         this.renderHealthBar();
         this.renderScore();
         this.renderLevel();
@@ -213,7 +220,7 @@ export class UIManager {
     /**
      * 渲染血条
      */
-    renderHealthBar() {
+    renderHealthBar(): void {
         const x = 20;
         const y = 20;
         const width = 200;
@@ -256,7 +263,7 @@ export class UIManager {
     /**
      * 渲染分数
      */
-    renderScore() {
+    renderScore(): void {
         this.ctx.fillStyle = '#fff';
         this.ctx.font = 'bold 20px Arial';
         this.ctx.textAlign = 'right';
@@ -270,7 +277,7 @@ export class UIManager {
     /**
      * 渲染关卡信息
      */
-    renderLevel() {
+    renderLevel(): void {
         this.ctx.fillStyle = '#4ecdc4';
         this.ctx.font = 'bold 18px Arial';
         this.ctx.textAlign = 'right';
@@ -293,7 +300,7 @@ export class UIManager {
     /**
      * 渲染武器状态
      */
-    renderWeaponStatus() {
+    renderWeaponStatus(): void {
         const x = 20;
         let y = 60;
         
@@ -335,7 +342,7 @@ export class UIManager {
     /**
      * 渲染进度条
      */
-    renderProgress() {
+    renderProgress(): void {
         const requiredKills = this.game.level * 15;
         const progress = Math.min(this.game.enemiesKilled / requiredKills, 1);
         
@@ -371,7 +378,7 @@ export class UIManager {
     /**
      * 渲染武器面板
      */
-    renderWeaponPanel() {
+    renderWeaponPanel(): void {
         const weaponInfo = this.game.player.getWeaponInfo();
         const x = this.canvas.width - 150;
         const y = 100;
@@ -448,7 +455,7 @@ export class UIManager {
     /**
      * 渲染暂停覆盖层
      */
-    renderPauseOverlay() {
+    renderPauseOverlay(): void {
         // 半透明遮罩
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -471,7 +478,7 @@ export class UIManager {
     /**
      * 渲染升级覆盖层
      */
-    renderLevelUpOverlay() {
+    renderLevelUpOverlay(): void {
         // 半透明遮罩
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -504,7 +511,7 @@ export class UIManager {
     /**
      * 渲染游戏结束界面
      */
-    renderGameOverScreen() {
+    renderGameOverScreen(): void {
         // 背景
         this.renderBackground();
         
@@ -544,7 +551,7 @@ export class UIManager {
     /**
      * 渲染游戏统计
      */
-    renderGameStats() {
+    renderGameStats(): void {
         const centerX = this.canvas.width / 2;
         let y = this.canvas.height * 0.65;
         
@@ -568,7 +575,7 @@ export class UIManager {
      * 添加UI动画
      * @param {Object} animation 
      */
-    addAnimation(animation) {
+    addAnimation(animation: any): void {
         this.uiAnimations.push({
             time: 0,
             duration: 1000,
@@ -580,7 +587,7 @@ export class UIManager {
     /**
      * 渲染调试信息
      */
-    renderDebugInfo() {
+    renderDebugInfo(): void {
         if (!GAME_CONFIG.DEBUG.ENABLED) return;
         
         const info = [
@@ -603,7 +610,7 @@ export class UIManager {
     /**
      * 清理UI管理器
      */
-    destroy() {
+    destroy(): void {
         this.uiAnimations.length = 0;
         this.game = null;
         this.ctx = null;

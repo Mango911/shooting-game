@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏调试页面</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff; 
+            margin: 20px;
+        }
+        .section {
+            background: #2a2a2a;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #4ecdc4; }
+        .warning { color: #feca57; }
+        pre {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        canvas {
+            border: 2px solid #4ecdc4;
+            background: #000;
+        }
+        #console-output {
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐛 游戏调试控制台</h1>
+    
+    <div class="section">
+        <h3>📊 加载状态</h3>
+        <div id="load-status">正在检测...</div>
+    </div>
+    
+    <div class="section">
+        <h3>🎮 游戏测试区域</h3>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div class="section">
+        <h3>📋 控制台输出</h3>
+        <div id="console-output"></div>
+    </div>
+    
+    <div class="section">
+        <h3>🔧 模块测试</h3>
+        <div id="module-tests"></div>
+    </div>
+
+    <script type="module">
+        const loadStatus = document.getElementById('load-status');
+        const consoleOutput = document.getElementById('console-output');
+        const moduleTests = document.getElementById('module-tests');
+        const canvas = document.getElementById('gameCanvas');
+        
+        // 捕获所有控制台输出
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function logToPage(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog(...args);
+            logToPage(args.join(' '), 'success');
+        };
+        
+        console.error = (...args) => {
+            originalError(...args);
+            logToPage('❌ ' + args.join(' '), 'error');
+        };
+        
+        console.warn = (...args) => {
+            originalWarn(...args);
+            logToPage('⚠️ ' + args.join(' '), 'warning');
+        };
+        
+        // 捕获未处理的错误
+        window.addEventListener('error', (event) => {
+            logToPage(`❌ JavaScript错误: ${event.message} 在 ${event.filename}:${event.lineno}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            logToPage(`❌ Promise错误: ${event.reason}`, 'error');
+        });
+        
+        // 模块测试
+        async function testModules() {
+            loadStatus.innerHTML = '🔍 开始测试...';
+            const results = [];
+            
+            try {
+                // 测试基础模块
+                loadStatus.innerHTML = '📦 测试 gameConfig...';
+                const { GAME_CONFIG } = await import('./dist/config/gameConfig.js');
+                results.push('✅ gameConfig 加载成功');
+                
+                loadStatus.innerHTML = '📦 测试 AudioManager...';
+                const AudioManager = await import('./dist/managers/AudioManager.js');
+                results.push('✅ AudioManager 加载成功');
+                
+                loadStatus.innerHTML = '📦 测试 InputManager...';
+                const InputManager = await import('./dist/managers/InputManager.js');
+                results.push('✅ InputManager 加载成功');
+                
+                loadStatus.innerHTML = '📦 测试 ParticleSystem...';
+                const ParticleSystem = await import('./dist/classes/Particle.js');
+                results.push('✅ ParticleSystem 加载成功');
+                
+                loadStatus.innerHTML = '📦 测试 Game 主类...';
+                const { default: Game } = await import('./dist/Game.js');
+                results.push('✅ Game 主类加载成功');
+                
+                loadStatus.innerHTML = '🎮 尝试创建游戏实例...';
+                const game = new Game(canvas);
+                results.push('✅ 游戏实例创建成功');
+                
+                loadStatus.innerHTML = '🚀 尝试启动游戏...';
+                game.start();
+                results.push('✅ 游戏启动成功！');
+                
+                loadStatus.innerHTML = '<span class="success">✅ 所有测试通过！游戏可以正常运行</span>';
+                
+                // 设置全局游戏对象用于调试
+                window.game = game;
+                results.push('🔧 调试对象已设置: window.game');
+                
+            } catch (error) {
+                results.push(`❌ 错误: ${error.message}`);
+                results.push(`📍 堆栈: ${error.stack}`);
+                loadStatus.innerHTML = `<span class="error">❌ 测试失败: ${error.message}</span>`;
+            }
+            
+            moduleTests.innerHTML = results.map(r => `<div>${r}</div>`).join('');
+        }
+        
+        // 开始测试
+        console.log('🚀 开始游戏调试...');
+        testModules();
+        
+        // 显示浏览器信息
+        console.log(`🌐 浏览器: ${navigator.userAgent}`);
+        console.log(`📱 视口: ${window.innerWidth}x${window.innerHeight}`);
+    </script>
+    
+    <script>
+        // 添加一些调试工具
+        window.debugInfo = {
+            showStats: () => {
+                if (window.game) {
+                    console.log('🎮 游戏统计:', window.game.getStats());
+                } else {
+                    console.log('❌ 游戏实例不存在');
+                }
+            },
+            toggleDebug: () => {
+                if (window.game) {
+                    window.game.debug.toggleDebug();
+                } else {
+                    console.log('❌ 游戏实例不存在');
+                }
+            },
+            restart: () => {
+                if (window.game) {
+                    window.game.reset();
+                    console.log('🔄 游戏已重置');
+                } else {
+                    console.log('❌ 游戏实例不存在');
+                }
+            }
+        };
+        
+        console.log('🔧 调试工具已加载:');
+        console.log('- debugInfo.showStats() - 显示游戏统计');
+        console.log('- debugInfo.toggleDebug() - 切换调试模式'); 
+        console.log('- debugInfo.restart() - 重启游戏');
+    </script>
+</body>
+</html> 

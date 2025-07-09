@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(code:*)",
+      "Bash(rm:*)",
+      "Bash(osascript:*)",
+      "Bash(claude mcp)",
+      "Bash(claude mcp:*)",
+      "Bash(npm search:*)",
+      "WebFetch(domain:github.com)",
+      "mcp__github__get_file_contents",
+      "Bash(gh api:*)",
+      "mcp__github__search_repositories",
+      "Bash(npm run type-check:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(for file in Player Enemy PowerUp Particle Weapon Bullet)",
+      "Bash(do echo \"验证 $file.ts...\")",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(rg:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run copy-assets:*)",
+      "Bash(node:*)",
+      "Bash(mkdir:*)",
+      "Bash(curl:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_click",
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_evaluate",
+      "Bash(pkill:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

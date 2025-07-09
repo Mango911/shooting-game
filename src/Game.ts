@@ -3,7 +3,7 @@
  * 协调各个管理器，保持游戏流程的简洁性
  */
 
-import { GAME_CONFIG } from './config/gameConfig.js';
+import {  GAME_CONFIG  } from './config/gameConfig.js';
 import AudioManager from './managers/AudioManager.js';
 import InputManager from './managers/InputManager.js';
 import CollisionManager from './managers/CollisionManager.js';
@@ -14,81 +14,58 @@ import UIManager from './managers/UIManager.js';
 import Player from './classes/Player.js';
 import Particle from './classes/Particle.js';
 import Background from './classes/Background.js';
-import Bullet from './classes/Bullet.js';
-import Enemy from './classes/Enemy.js';
-import PowerUp from './classes/PowerUp.js';
-
-import type { 
-    GameState, 
-    GameStats, 
-    ScreenShake, 
-    HTMLCanvasElementWithSize 
-} from './types/global.js';
-
-interface GameDebug {
-    spawnEnemy: (type: string) => void;
-    spawnPowerUp: (type: string) => void;
-    spawnBoss: () => void;
-    clearAll: () => void;
-    setState: (state: GameState) => void;
-    getStats: () => GameStats;
-    toggleDebug: () => void;
-}
 
 export class Game {
     // 核心组件
-    canvas: HTMLCanvasElementWithSize;
-    ctx: CanvasRenderingContext2D;
+    public canvas: HTMLCanvasElement;
+    public ctx: CanvasRenderingContext2D;
     
     // 游戏状态
-    gameState: GameState;
-    score: number;
-    level: number;
-    enemiesKilled: number;
-    bossKilled: number;
-    isNewHighScore: boolean;
+    public gameState: string;
+    public score: number;
+    public level: number;
+    public enemiesKilled: number;
+    public bossKilled: number;
+    public isNewHighScore: boolean;
     
     // 游戏对象数组
-    enemies: Enemy[];
-    bullets: Bullet[];
-    enemyBullets: Bullet[];
-    powerUps: PowerUp[];
+    public enemies: any[];
+    public bullets: any[];
+    public enemyBullets: any[];
+    public powerUps: any[];
     
     // 特效
-    screenShake: ScreenShake | null;
-    fps: number;
-    lastFrameTime: number;
+    public screenShake: any;
+    public fps: number;
+    public lastFrameTime: number;
     
     // 游戏循环控制
-    gameLoopRunning: boolean;
-    
-    // 游戏对象
-    player: Player;
-    particleSystem: Particle;
-    background: Background;
+    public gameLoopRunning: boolean;
     
     // 管理器
-    audioManager: AudioManager;
-    inputManager: InputManager;
-    collisionManager: CollisionManager;
-    spawnManager: SpawnManager;
-    stateManager: GameStateManager;
-    uiManager: UIManager;
+    public inputManager: InputManager;
+    public audioManager: AudioManager;
+    public stateManager: GameStateManager;
+    public spawnManager: SpawnManager;
+    public uiManager: UIManager;
+    public collisionManager: CollisionManager;
     
-    // 调试接口
-    debug: GameDebug;
-
-    constructor(canvas: HTMLCanvasElementWithSize) {
+    // 游戏对象
+    public player: Player;
+    public particleSystem: Particle;
+    public background: Background;
+    
+    constructor(canvas: HTMLCanvasElement) {
         // 核心组件
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d')!;
+        this.ctx = canvas.getContext('2d');
         
         // 设置canvas尺寸
         this.canvas.width = GAME_CONFIG.CANVAS.WIDTH;
         this.canvas.height = GAME_CONFIG.CANVAS.HEIGHT;
         
         // 游戏状态
-        this.gameState = GAME_CONFIG.GAME_STATES.START as GameState;
+        this.gameState = GAME_CONFIG.GAME_STATES.START;
         this.score = 0;
         this.level = 1;
         this.enemiesKilled = 0;
@@ -109,22 +86,6 @@ export class Game {
         // 游戏循环控制
         this.gameLoopRunning = false;
         
-        // 初始化调试接口
-        this.debug = {
-            spawnEnemy: (type: string) => this.spawnManager.forceSpawnEnemy(type),
-            spawnPowerUp: (type: string) => this.spawnManager.forceSpawnPowerUp(type),
-            spawnBoss: () => this.spawnManager.forceSpawnBoss(),
-            clearAll: () => this.spawnManager.clearAll(),
-            setState: (state: GameState) => this.stateManager.forceState(state),
-            getStats: () => this.getStats(),
-            toggleDebug: () => {
-                if (GAME_CONFIG.DEBUG) {
-                    GAME_CONFIG.DEBUG.ENABLED = !GAME_CONFIG.DEBUG.ENABLED;
-                    console.log(`🔧 调试模式: ${GAME_CONFIG.DEBUG.ENABLED ? '开启' : '关闭'}`);
-                }
-            }
-        };
-        
         // 初始化所有管理器和游戏对象
         this.initializeGame();
         
@@ -134,7 +95,7 @@ export class Game {
     /**
      * 初始化游戏
      */
-    private initializeGame(): void {
+    initializeGame() {
         // 创建玩家
         this.player = new Player(
             this.canvas.width / 2 - 25,
@@ -142,7 +103,7 @@ export class Game {
         );
         
         // 创建粒子系统
-        this.particleSystem = new Particle(this.ctx);
+        this.particleSystem = new Particle();
         
         // 创建背景
         this.background = new Background(this.canvas.width, this.canvas.height);
@@ -160,9 +121,9 @@ export class Game {
 
     /**
      * 游戏主循环
-     * @param currentTime 当前时间戳
+     * @param {number} currentTime 
      */
-    gameLoop(currentTime: number): void {
+    gameLoop(currentTime) {
         // 计算FPS
         this.calculateFPS(currentTime);
         
@@ -190,9 +151,9 @@ export class Game {
 
     /**
      * 更新游戏逻辑
-     * @param currentTime 当前时间戳
+     * @param {number} currentTime 
      */
-    private updateGame(currentTime: number): void {
+    updateGame(currentTime) {
         // 处理输入
         this.handleInput();
         
@@ -215,8 +176,8 @@ export class Game {
     /**
      * 处理输入
      */
-    private handleInput(): void {
-        const input = this.inputManager.getMovementInput();
+    handleInput() {
+        const input: any = this.inputManager.getMovementInput();
         
         // 移动玩家
         this.player.handleInput(input, this.canvas);
@@ -230,7 +191,7 @@ export class Game {
     /**
      * 更新所有游戏对象
      */
-    private updateGameObjects(): void {
+    updateGameObjects() {
         // 更新玩家
         this.player.update();
         
@@ -238,8 +199,8 @@ export class Game {
         this.enemies.forEach(enemy => {
             enemy.update();
             // 敌机射击
-            if ((enemy as any).canShoot && (enemy as any).canShoot()) {
-                (enemy as any).shoot(this.enemyBullets);
+            if (enemy.canShoot && enemy.canShoot()) {
+                enemy.shoot(this.enemyBullets);
             }
         });
         
@@ -257,7 +218,7 @@ export class Game {
     /**
      * 渲染游戏对象
      */
-    private renderGame(): void {
+    renderGame() {
         // 渲染玩家
         this.player.render(this.ctx);
         
@@ -272,7 +233,7 @@ export class Game {
         this.powerUps.forEach(powerUp => powerUp.render(this.ctx));
         
         // 渲染粒子
-        this.particleSystem.render();
+        this.particleSystem.render(this.ctx);
         
         // 渲染调试信息
         this.uiManager.renderDebugInfo();
@@ -281,7 +242,7 @@ export class Game {
     /**
      * 清理超出边界的对象
      */
-    private cleanupObjects(): void {
+    cleanupObjects() {
         const canvasHeight = this.canvas.height;
         const canvasWidth = this.canvas.width;
         
@@ -309,9 +270,9 @@ export class Game {
 
     /**
      * 计算FPS
-     * @param currentTime 当前时间戳
+     * @param {number} currentTime 
      */
-    private calculateFPS(currentTime: number): void {
+    calculateFPS(currentTime) {
         if (this.lastFrameTime) {
             this.fps = 1000 / (currentTime - this.lastFrameTime);
         }
@@ -321,14 +282,14 @@ export class Game {
     /**
      * 清空画布
      */
-    private clearCanvas(): void {
+    clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     /**
      * 应用屏幕震动效果
      */
-    private applyScreenShake(): void {
+    applyScreenShake() {
         if (this.screenShake) {
             if (this.screenShake.duration > 0) {
                 const shakeX = (Math.random() - 0.5) * this.screenShake.intensity * 2;
@@ -349,28 +310,28 @@ export class Game {
     /**
      * 重置游戏（委托给状态管理器）
      */
-    reset(): void {
+    reset() {
         this.stateManager.resetGame();
     }
 
     /**
      * 暂停游戏（委托给状态管理器）
      */
-    pause(): void {
+    pause() {
         this.stateManager.pauseGame();
     }
 
     /**
      * 恢复游戏（委托给状态管理器）
      */
-    resume(): void {
+    resume() {
         this.stateManager.resumeGame();
     }
 
     /**
      * 开始游戏（委托给状态管理器）
      */
-    start(): void {
+    start() {
         this.stateManager.startGame();
         this.startGameLoop();
     }
@@ -378,13 +339,13 @@ export class Game {
     /**
      * 启动游戏主循环
      */
-    startGameLoop(): void {
+    startGameLoop() {
         // 防止重复启动
         if (this.gameLoopRunning) return;
         
         this.gameLoopRunning = true;
         
-        const loop = (currentTime: number) => {
+        const loop = (currentTime) => {
             if (this.gameLoopRunning) {
                 this.gameLoop(currentTime);
                 requestAnimationFrame(loop);
@@ -398,15 +359,16 @@ export class Game {
     /**
      * 停止游戏主循环
      */
-    stopGameLoop(): void {
+    stopGameLoop() {
         this.gameLoopRunning = false;
         console.log('⏹️ 游戏主循环已停止');
     }
 
     /**
      * 获取游戏统计信息
+     * @returns {Object}
      */
-    getStats(): GameStats {
+    getStats() {
         return {
             score: this.score,
             level: this.level,
@@ -423,9 +385,25 @@ export class Game {
     }
 
     /**
+     * 调试方法：强制生成对象
+     */
+    debug = {
+        spawnEnemy: (type) => this.spawnManager.forceSpawnEnemy(type),
+        spawnPowerUp: (type) => this.spawnManager.forceSpawnPowerUp(type),
+        spawnBoss: () => this.spawnManager.forceSpawnBoss(),
+        clearAll: () => this.spawnManager.clearAll(),
+        setState: (state) => this.stateManager.forceState(state),
+        getStats: () => this.getStats(),
+        toggleDebug: () => {
+            GAME_CONFIG.DEBUG.ENABLED = !GAME_CONFIG.DEBUG.ENABLED;
+            console.log(`🔧 调试模式: ${GAME_CONFIG.DEBUG.ENABLED ? '开启' : '关闭'}`);
+        }
+    };
+
+    /**
      * 销毁游戏，清理所有资源
      */
-    destroy(): void {
+    destroy() {
         // 停止游戏循环
         this.stopGameLoop();
         

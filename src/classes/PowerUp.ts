@@ -3,10 +3,28 @@
  * 处理游戏中各种道具的行为和渲染
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
+
+interface PowerUpConfig {
+    color: string;
+    secondaryColor: string;
+    symbol: string;
+    name: string;
+}
 
 export class PowerUp {
-    constructor(x, y, type) {
+    public x: number;
+    public y: number;
+    public type: string;
+    public width: number;
+    public height: number;
+    public speed: number;
+    public active: boolean;
+    public bobOffset: number;
+    public glowPhase: number;
+    public config: PowerUpConfig;
+
+    constructor(x: number, y: number, type: string) {
         this.x = x;
         this.y = y;
         this.type = type;
@@ -23,10 +41,10 @@ export class PowerUp {
 
     /**
      * 获取道具类型配置
-     * @param {string} type - 道具类型
-     * @returns {Object} 道具配置
+     * @param type - 道具类型
+     * @returns 道具配置
      */
-    getTypeConfig(type) {
+    getTypeConfig(type: string): PowerUpConfig {
         const configs = {
             health: {
                 color: '#ff6b6b',
@@ -84,7 +102,7 @@ export class PowerUp {
     /**
      * 更新道具状态
      */
-    update() {
+    update(): void {
         // 向下移动
         this.y += this.speed;
         
@@ -99,9 +117,9 @@ export class PowerUp {
 
     /**
      * 渲染道具
-     * @param {CanvasRenderingContext2D} ctx - 画布上下文
+     * @param ctx - 画布上下文
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         if (!this.active) return;
 
         ctx.save();
@@ -149,12 +167,12 @@ export class PowerUp {
 
     /**
      * 渲染主体形状
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {number} centerX 
-     * @param {number} centerY 
-     * @param {number} glowIntensity 
+     * @param ctx
+     * @param centerX 
+     * @param centerY 
+     * @param glowIntensity 
      */
-    renderMainShape(ctx, centerX, centerY, glowIntensity) {
+    renderMainShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         // 根据道具类型渲染不同形状
         switch (this.type) {
             case 'health':
@@ -188,7 +206,7 @@ export class PowerUp {
     /**
      * 渲染心形（生命道具）
      */
-    renderHeartShape(ctx, centerX, centerY, glowIntensity) {
+    renderHeartShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 6 + glowIntensity * 2;
         
         ctx.fillStyle = this.config.color;
@@ -202,7 +220,7 @@ export class PowerUp {
     /**
      * 渲染盾牌形状
      */
-    renderShieldShape(ctx, centerX, centerY, glowIntensity) {
+    renderShieldShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 8 + glowIntensity;
         
         ctx.fillStyle = this.config.color;
@@ -220,7 +238,7 @@ export class PowerUp {
     /**
      * 渲染武器形状
      */
-    renderWeaponShape(ctx, centerX, centerY, glowIntensity) {
+    renderWeaponShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 6 + glowIntensity;
         
         ctx.fillStyle = this.config.color;
@@ -236,7 +254,7 @@ export class PowerUp {
     /**
      * 渲染闪电形状
      */
-    renderLightningShape(ctx, centerX, centerY, glowIntensity) {
+    renderLightningShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 8 + glowIntensity;
         
         ctx.fillStyle = this.config.color;
@@ -254,7 +272,7 @@ export class PowerUp {
     /**
      * 渲染默认圆形
      */
-    renderDefaultShape(ctx, centerX, centerY, glowIntensity) {
+    renderDefaultShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 8 + glowIntensity;
         
         ctx.fillStyle = this.config.color;
@@ -266,7 +284,7 @@ export class PowerUp {
     /**
      * 渲染激光形状
      */
-    renderLaserShape(ctx, centerX, centerY, glowIntensity) {
+    renderLaserShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 8 + glowIntensity;
         
         // 激光束效果
@@ -287,7 +305,7 @@ export class PowerUp {
     /**
      * 渲染导弹形状
      */
-    renderMissileShape(ctx, centerX, centerY, glowIntensity) {
+    renderMissileShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 8 + glowIntensity;
         
         // 导弹主体
@@ -312,7 +330,7 @@ export class PowerUp {
     /**
      * 渲染等离子形状
      */
-    renderPlasmaShape(ctx, centerX, centerY, glowIntensity) {
+    renderPlasmaShape(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, glowIntensity: number): void {
         const size = 6 + glowIntensity;
         const time = Date.now() * 0.01;
         
@@ -341,11 +359,11 @@ export class PowerUp {
 
     /**
      * 渲染符号
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {number} centerX 
-     * @param {number} centerY 
+     * @param ctx
+     * @param centerX 
+     * @param centerY 
      */
-    renderSymbol(ctx, centerX, centerY) {
+    renderSymbol(ctx: CanvasRenderingContext2D, centerX: number, centerY: number): void {
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 10px Arial';
         ctx.textAlign = 'center';
@@ -360,10 +378,10 @@ export class PowerUp {
 
     /**
      * 检查与其他对象的碰撞
-     * @param {Object} other - 其他对象
-     * @returns {boolean}
+     * @param other - 其他对象
+     * @returns 是否发生碰撞
      */
-    collidesWith(other) {
+    collidesWith(other: { x: number; y: number; width: number; height: number }): boolean {
         return this.x < other.x + other.width &&
                this.x + this.width > other.x &&
                this.y < other.y + other.height &&
@@ -373,23 +391,23 @@ export class PowerUp {
     /**
      * 销毁道具
      */
-    destroy() {
+    destroy(): void {
         this.active = false;
     }
 
     /**
      * 获取道具名称
-     * @returns {string}
+     * @returns 道具名称
      */
-    getName() {
+    getName(): string {
         return this.config.name;
     }
 
     /**
      * 获取边界框
-     * @returns {Object}
+     * @returns 边界框信息
      */
-    getBounds() {
+    getBounds(): { x: number; y: number; width: number; height: number } {
         return {
             x: this.x,
             y: this.y,

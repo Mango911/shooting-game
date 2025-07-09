@@ -3,12 +3,20 @@
  * 处理敌机、道具和其他游戏对象的生成逻辑
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
 import Enemy from '../classes/Enemy.js';
 import PowerUp from '../classes/PowerUp.js';
 
 export class SpawnManager {
-    constructor(game) {
+    public game: any;
+    public lastEnemySpawn: number;
+    public lastPowerUpSpawn: number;
+    public lastBossSpawn: number;
+    public enemySpawnRate: number;
+    public bossSpawnRate: number;
+    public powerUpSpawnRate: number;
+
+    constructor(game: any) {
         this.game = game;
         this.lastEnemySpawn = 0;
         this.lastPowerUpSpawn = 0;
@@ -23,7 +31,7 @@ export class SpawnManager {
     /**
      * 计算生成频率
      */
-    calculateSpawnRates() {
+    calculateSpawnRates(): void {
         const level = this.game.level;
         
         // 敌机生成间隔随关卡递减
@@ -45,7 +53,7 @@ export class SpawnManager {
      * 更新生成逻辑
      * @param {number} currentTime 
      */
-    update(currentTime) {
+    update(currentTime: number): void {
         this.spawnEnemies(currentTime);
         this.spawnPowerUps(currentTime);
         this.spawnBoss(currentTime);
@@ -55,7 +63,7 @@ export class SpawnManager {
      * 生成敌机
      * @param {number} currentTime 
      */
-    spawnEnemies(currentTime) {
+    spawnEnemies(currentTime: number): void {
         if (currentTime - this.lastEnemySpawn > this.enemySpawnRate) {
             this.createRandomEnemy();
             this.lastEnemySpawn = currentTime;
@@ -65,7 +73,7 @@ export class SpawnManager {
     /**
      * 创建随机敌机
      */
-    createRandomEnemy() {
+    createRandomEnemy(): void {
         const types = ['normal', 'fast', 'heavy', 'zigzag'];
         const weights = this.getEnemyTypeWeights();
         const selectedType = this.weightedRandomSelect(types, weights);
@@ -80,7 +88,7 @@ export class SpawnManager {
      * 获取敌机类型权重
      * @returns {Array<number>}
      */
-    getEnemyTypeWeights() {
+    getEnemyTypeWeights(): number[] {
         const level = this.game.level;
         
         // 基础权重
@@ -106,7 +114,7 @@ export class SpawnManager {
      * @param {Array<number>} weights 
      * @returns {*}
      */
-    weightedRandomSelect(items, weights) {
+    weightedRandomSelect(items: any[], weights: number[]): any {
         const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
         let random = Math.random() * totalWeight;
         
@@ -125,18 +133,18 @@ export class SpawnManager {
      * @param {string} type 
      * @returns {Enemy}
      */
-    createEnemyByType(type) {
+    createEnemyByType(type: string): Enemy {
         const x = Math.random() * (this.game.canvas.width - 50);
         const y = -50;
         
-        return new Enemy(x, y, type, this.game.level);
+        return new Enemy(x, y, type);
     }
 
     /**
      * 生成Boss
      * @param {number} currentTime 
      */
-    spawnBoss(currentTime) {
+    spawnBoss(currentTime: number): void {
         // Boss生成条件：击杀足够敌机且时间间隔足够
         const shouldSpawnBoss = 
             this.game.enemiesKilled >= this.game.level * 10 &&
@@ -152,11 +160,11 @@ export class SpawnManager {
     /**
      * 创建Boss
      */
-    createBoss() {
+    createBoss(): void {
         const x = this.game.canvas.width / 2 - 75;
         const y = -100;
         
-        const boss = new Enemy(x, y, 'boss', this.game.level);
+        const boss = new Enemy(x, y, 'boss');
         this.game.enemies.push(boss);
         
         // Boss出现特效
@@ -174,7 +182,7 @@ export class SpawnManager {
      * 生成道具
      * @param {number} currentTime 
      */
-    spawnPowerUps(currentTime) {
+    spawnPowerUps(currentTime: number): void {
         if (currentTime - this.lastPowerUpSpawn > this.powerUpSpawnRate) {
             if (this.shouldSpawnPowerUp()) {
                 this.createRandomPowerUp();
@@ -187,7 +195,7 @@ export class SpawnManager {
      * 判断是否应该生成道具
      * @returns {boolean}
      */
-    shouldSpawnPowerUp() {
+    shouldSpawnPowerUp(): boolean {
         // 基础概率
         let chance = GAME_CONFIG.POWER_UP.SPAWN_CHANCE;
         
@@ -207,7 +215,7 @@ export class SpawnManager {
     /**
      * 创建随机道具
      */
-    createRandomPowerUp() {
+    createRandomPowerUp(): void {
         const types = ['health', 'shield', 'rapidFire', 'doubleShot', 'multiShot'];
         const weights = this.getPowerUpTypeWeights();
         const selectedType = this.weightedRandomSelect(types, weights);
@@ -222,7 +230,7 @@ export class SpawnManager {
      * 获取道具类型权重
      * @returns {Array<number>}
      */
-    getPowerUpTypeWeights() {
+    getPowerUpTypeWeights(): number[] {
         const player = this.game.player;
         let weights = [20, 20, 20, 20, 20]; // health, shield, rapidFire, doubleShot, multiShot
         
@@ -259,7 +267,7 @@ export class SpawnManager {
      * @param {string} type 
      * @returns {PowerUp}
      */
-    createPowerUpByType(type) {
+    createPowerUpByType(type: string): PowerUp {
         const x = Math.random() * (this.game.canvas.width - 30);
         const y = -30;
         
@@ -270,7 +278,7 @@ export class SpawnManager {
      * 立即生成指定类型的敌机（调试用）
      * @param {string} type 
      */
-    forceSpawnEnemy(type) {
+    forceSpawnEnemy(type: string): void {
         const enemy = this.createEnemyByType(type);
         this.game.enemies.push(enemy);
         console.log(`🔧 强制生成敌机: ${type}`);
@@ -280,7 +288,7 @@ export class SpawnManager {
      * 立即生成指定类型的道具（调试用）
      * @param {string} type 
      */
-    forceSpawnPowerUp(type) {
+    forceSpawnPowerUp(type: string): void {
         const powerUp = this.createPowerUpByType(type);
         this.game.powerUps.push(powerUp);
         console.log(`🔧 强制生成道具: ${type}`);
@@ -289,7 +297,7 @@ export class SpawnManager {
     /**
      * 立即生成Boss（调试用）
      */
-    forceSpawnBoss() {
+    forceSpawnBoss(): void {
         this.createBoss();
         console.log('🔧 强制生成Boss');
     }
@@ -297,7 +305,7 @@ export class SpawnManager {
     /**
      * 清空所有生成物
      */
-    clearAll() {
+    clearAll(): void {
         this.game.enemies.length = 0;
         this.game.powerUps.length = 0;
         this.game.bullets.length = 0;
@@ -308,7 +316,7 @@ export class SpawnManager {
     /**
      * 重置生成时间
      */
-    resetSpawnTimers() {
+    resetSpawnTimers(): void {
         const currentTime = Date.now();
         this.lastEnemySpawn = currentTime;
         this.lastPowerUpSpawn = currentTime;
@@ -320,7 +328,7 @@ export class SpawnManager {
      * 更新关卡相关的生成参数
      * @param {number} newLevel 
      */
-    updateLevel(newLevel) {
+    updateLevel(newLevel: number): void {
         this.game.level = newLevel;
         this.calculateSpawnRates();
         console.log(`📈 关卡更新为: ${newLevel}`);
@@ -330,7 +338,7 @@ export class SpawnManager {
      * 获取当前生成状态信息
      * @returns {Object}
      */
-    getSpawnStatus() {
+    getSpawnStatus(): object {
         const currentTime = Date.now();
         return {
             enemySpawnRate: this.enemySpawnRate,

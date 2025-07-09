@@ -3,10 +3,13 @@
  * 处理键盘输入、事件监听和游戏控制
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
 
 export class InputManager {
-    constructor(game) {
+    public game: any;
+    public keys: { [key: string]: boolean };
+
+    constructor(game: any) {
         this.game = game;
         this.keys = {};
         this.setupEventListeners();
@@ -15,7 +18,7 @@ export class InputManager {
     /**
      * 设置事件监听器
      */
-    setupEventListeners() {
+    setupEventListeners(): void {
         // 键盘事件
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -34,7 +37,7 @@ export class InputManager {
      * 处理按键按下
      * @param {KeyboardEvent} e 
      */
-    handleKeyDown(e) {
+    handleKeyDown(e: KeyboardEvent): void {
         this.keys[e.key.toLowerCase()] = true;
         
         // 游戏控制键
@@ -82,14 +85,14 @@ export class InputManager {
      * 处理按键释放
      * @param {KeyboardEvent} e 
      */
-    handleKeyUp(e) {
+    handleKeyUp(e: KeyboardEvent): void {
         this.keys[e.key.toLowerCase()] = false;
     }
 
     /**
      * 处理空格键（射击）
      */
-    handleSpaceKey() {
+    handleSpaceKey(): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.game.player.shoot(this.game.bullets);
             this.game.audioManager.play('shoot');
@@ -99,7 +102,7 @@ export class InputManager {
     /**
      * 处理Enter键
      */
-    handleEnterKey() {
+    handleEnterKey(): void {
         switch (this.game.gameState) {
             case GAME_CONFIG.GAME_STATES.START:
                 this.game.stateManager.startGame();
@@ -116,14 +119,14 @@ export class InputManager {
     /**
      * 处理Escape键
      */
-    handleEscapeKey() {
+    handleEscapeKey(): void {
         this.game.stateManager.togglePause();
     }
 
     /**
      * 处理暂停键
      */
-    handlePauseKey() {
+    handlePauseKey(): void {
         this.game.stateManager.togglePause();
     }
 
@@ -131,7 +134,7 @@ export class InputManager {
      * 处理武器切换键
      * @param {string} direction - 'next' 或 'prev'
      */
-    handleWeaponSwitchKey(direction) {
+    handleWeaponSwitchKey(direction: string): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.game.player.switchWeapon(direction);
         }
@@ -141,7 +144,7 @@ export class InputManager {
      * 处理武器直选键
      * @param {string} key - 数字键1-6
      */
-    handleWeaponSelectKey(key) {
+    handleWeaponSelectKey(key: string): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             const weaponMap = {
                 '1': 'normal',
@@ -162,7 +165,7 @@ export class InputManager {
     /**
      * 处理窗口失去焦点
      */
-    handleWindowBlur() {
+    handleWindowBlur(): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.game.stateManager.pauseGame();
         }
@@ -171,7 +174,7 @@ export class InputManager {
     /**
      * 处理窗口大小变化
      */
-    handleWindowResize() {
+    handleWindowResize(): void {
         console.log('📱 窗口大小变化，可在此添加响应式逻辑');
         // 这里可以添加画布大小调整逻辑
     }
@@ -179,7 +182,7 @@ export class InputManager {
     /**
      * 处理页面可见性变化
      */
-    handleVisibilityChange() {
+    handleVisibilityChange(): void {
         if (document.hidden && this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.game.stateManager.pauseGame();
         }
@@ -190,7 +193,7 @@ export class InputManager {
      * @param {string} key - 按键名称
      * @returns {boolean}
      */
-    isKeyPressed(key) {
+    isKeyPressed(key: string): boolean {
         return this.keys[key.toLowerCase()] || false;
     }
 
@@ -198,7 +201,7 @@ export class InputManager {
      * 检查移动按键
      * @returns {Object} 移动方向对象
      */
-    getMovementInput() {
+    getMovementInput(): object {
         return {
             left: this.isKeyPressed('a') || this.isKeyPressed('arrowleft'),
             right: this.isKeyPressed('d') || this.isKeyPressed('arrowright'),
@@ -211,7 +214,7 @@ export class InputManager {
     /**
      * 清理事件监听器
      */
-    destroy() {
+    destroy(): void {
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
         window.removeEventListener('blur', this.handleWindowBlur);

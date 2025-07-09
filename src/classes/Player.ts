@@ -3,11 +3,55 @@
  * 处理玩家的移动、射击、道具效果和武器管理
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
 import WeaponManager from './Weapon.js';
 
+interface InputState {
+    left: boolean;
+    right: boolean;
+    up: boolean;
+    down: boolean;
+}
+
+interface CanvasLike {
+    width: number;
+    height: number;
+}
+
+interface BulletLike {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    active: boolean;
+}
+
+interface EnemyLike {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    active: boolean;
+}
+
 export class Player {
-    constructor(x, y) {
+    public x: number;
+    public y: number;
+    public width: number;
+    public height: number;
+    public speed: number;
+    public invulnerable: boolean;
+    public maxHealth: number;
+    public health: number;
+    public weaponManager: WeaponManager;
+    public rapidFire: boolean;
+    public rapidFireEnd: number;
+    public shield: boolean;
+    public shieldEnd: number;
+    public doubleShotEnd: number;
+    public multiShotEnd: number;
+
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
         this.width = GAME_CONFIG.PLAYER.WIDTH;
@@ -31,10 +75,10 @@ export class Player {
 
     /**
      * 处理输入并更新玩家状态
-     * @param {Object} input - 输入状态对象
-     * @param {Object} canvas - 画布对象
+     * @param input - 输入状态对象
+     * @param canvas - 画布对象
      */
-    handleInput(input, canvas) {
+    handleInput(input: InputState, canvas: CanvasLike): void {
         // 移动控制
         if (input.left) {
             this.x -= this.speed;
@@ -57,7 +101,7 @@ export class Player {
     /**
      * 更新玩家状态
      */
-    update() {
+    update(): void {
         // 更新武器系统
         this.weaponManager.update();
         
@@ -68,7 +112,7 @@ export class Player {
     /**
      * 更新道具效果
      */
-    updatePowerUpEffects() {
+    updatePowerUpEffects(): void {
         const now = Date.now();
         
         // 检查快速射击效果是否过期
@@ -84,9 +128,9 @@ export class Player {
 
     /**
      * 应用道具效果
-     * @param {string} type - 道具类型
+     * @param type - 道具类型
      */
-    applyPowerUp(type) {
+    applyPowerUp(type: string): void {
         const now = Date.now();
         
         switch(type) {
@@ -136,10 +180,10 @@ export class Player {
 
     /**
      * 射击方法
-     * @param {Array} bullets - 子弹数组
-     * @param {Array} enemies - 敌机数组（导弹追踪用）
+     * @param bullets - 子弹数组
+     * @param enemies - 敌机数组（导弹追踪用）
      */
-    shoot(bullets, enemies = []) {
+    shoot(bullets: BulletLike[], enemies: EnemyLike[] = []): boolean {
         const centerX = this.x + this.width / 2;
         const shootY = this.y;
         
@@ -152,9 +196,9 @@ export class Player {
 
     /**
      * 切换武器
-     * @param {string} direction - 'next' 或 'prev'
+     * @param direction - 'next' 或 'prev'
      */
-    switchWeapon(direction = 'next') {
+    switchWeapon(direction: string = 'next'): void {
         if (direction === 'next') {
             this.weaponManager.nextWeapon();
         } else {
@@ -164,25 +208,25 @@ export class Player {
 
     /**
      * 切换到指定武器
-     * @param {string} weaponType 
+     * @param weaponType 
      */
-    selectWeapon(weaponType) {
+    selectWeapon(weaponType: string): void {
         this.weaponManager.switchWeapon(weaponType);
     }
 
     /**
      * 获取当前武器信息
-     * @returns {Object}
+     * @returns 武器状态信息
      */
-    getWeaponInfo() {
+    getWeaponInfo(): any {
         return this.weaponManager.getWeaponStatus();
     }
 
     /**
      * 渲染玩家飞机
-     * @param {CanvasRenderingContext2D} ctx - 画布上下文
+     * @param ctx - 画布上下文
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         const centerX = this.x + this.width / 2;
         const centerY = this.y + this.height / 2;
         
@@ -296,10 +340,10 @@ export class Player {
 
     /**
      * 渲染引擎喷焰
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {string} weaponType 
+     * @param ctx 
+     * @param weaponType 
      */
-    renderEngineFlame(ctx, weaponType) {
+    renderEngineFlame(ctx: CanvasRenderingContext2D, weaponType: string): void {
         const time = Date.now() * 0.01;
         const flameLength = this.rapidFire ? 20 : 15;
         const flameWidth = this.rapidFire ? 6 : 4;
@@ -343,10 +387,10 @@ export class Player {
 
     /**
      * 渲染武器指示器
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {number} centerX 
+     * @param ctx 
+     * @param centerX 
      */
-    renderWeaponIndicator(ctx, centerX) {
+    renderWeaponIndicator(ctx: CanvasRenderingContext2D, centerX: number): void {
         const weaponInfo = this.getWeaponInfo();
         
         // 武器名称显示
@@ -379,10 +423,10 @@ export class Player {
 
     /**
      * 渲染蓄力指示器（激光武器）
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {number} centerX 
+     * @param ctx 
+     * @param centerX 
      */
-    renderChargeIndicator(ctx, centerX) {
+    renderChargeIndicator(ctx: CanvasRenderingContext2D, centerX: number): void {
         const weaponInfo = this.getWeaponInfo();
         
         if (weaponInfo.isCharging && weaponInfo.chargeProgress > 0) {
@@ -426,7 +470,7 @@ export class Player {
     /**
      * 重置玩家状态
      */
-    reset() {
+    reset(): void {
         this.x = GAME_CONFIG.CANVAS.WIDTH / 2 - this.width / 2;
         this.y = GAME_CONFIG.CANVAS.HEIGHT - this.height - 20;
         this.health = this.maxHealth;
@@ -446,10 +490,10 @@ export class Player {
 
     /**
      * 碰撞检测
-     * @param {Object} other 
-     * @returns {boolean}
+     * @param other 
+     * @returns 是否发生碰撞
      */
-    collidesWith(other) {
+    collidesWith(other: { x: number; y: number; width: number; height: number }): boolean {
         return this.x < other.x + other.width &&
                this.x + this.width > other.x &&
                this.y < other.y + other.height &&
@@ -458,9 +502,9 @@ export class Player {
 
     /**
      * 获取玩家状态信息
-     * @returns {Object}
+     * @returns 玩家状态信息
      */
-    getStatus() {
+    getStatus(): any {
         return {
             health: this.health,
             maxHealth: this.maxHealth,

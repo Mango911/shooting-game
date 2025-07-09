@@ -3,11 +3,15 @@
  * 处理游戏状态切换和相关逻辑
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
-import { saveHighScore, loadHighScore } from '../utils/helpers.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
+import {  saveHighScore, loadHighScore  } from '../utils/helpers.js';
 
 export class GameStateManager {
-    constructor(game) {
+    public game: any;
+    public previousState: string | null;
+    public stateStartTime: number;
+
+    constructor(game: any) {
         this.game = game;
         this.previousState = null;
         this.stateStartTime = Date.now();
@@ -19,7 +23,7 @@ export class GameStateManager {
      * 设置游戏状态
      * @param {string} newState 
      */
-    setState(newState) {
+    setState(newState: string): void {
         const oldState = this.game.gameState;
         this.previousState = oldState;
         this.game.gameState = newState;
@@ -35,7 +39,7 @@ export class GameStateManager {
      * @param {string} oldState 
      * @param {string} newState 
      */
-    onStateChange(oldState, newState) {
+    onStateChange(oldState: string, newState: string): void {
         switch (newState) {
             case GAME_CONFIG.GAME_STATES.START:
                 this.onEnterStart();
@@ -58,7 +62,7 @@ export class GameStateManager {
     /**
      * 进入开始状态
      */
-    onEnterStart() {
+    onEnterStart(): void {
         // 显示开始界面，可以添加背景音乐等
         if (this.game.audioManager && typeof this.game.audioManager.stopAll === 'function') {
             this.game.audioManager.stopAll();
@@ -71,7 +75,7 @@ export class GameStateManager {
     /**
      * 进入游戏状态
      */
-    onEnterPlaying() {
+    onEnterPlaying(): void {
         // 开始背景音乐
         if (this.game.audioManager && typeof this.game.audioManager.playBackground === 'function') {
             this.game.audioManager.playBackground();
@@ -84,7 +88,7 @@ export class GameStateManager {
     /**
      * 进入暂停状态
      */
-    onEnterPaused() {
+    onEnterPaused(): void {
         // 暂停所有音效
         if (this.game.audioManager && typeof this.game.audioManager.pauseBackground === 'function') {
             this.game.audioManager.pauseBackground();
@@ -97,7 +101,7 @@ export class GameStateManager {
     /**
      * 进入游戏结束状态
      */
-    onEnterGameOver() {
+    onEnterGameOver(): void {
         // 停止音乐，检查最高分
         if (this.game.audioManager && typeof this.game.audioManager.stopAll === 'function') {
             this.game.audioManager.stopAll();
@@ -111,7 +115,7 @@ export class GameStateManager {
     /**
      * 进入升级状态
      */
-    onEnterLevelUp() {
+    onEnterLevelUp(): void {
         // 升级音效
         this.game.audioManager.play('powerUp');
         console.log(`📈 升到 ${this.game.level} 级！`);
@@ -127,7 +131,7 @@ export class GameStateManager {
     /**
      * 开始游戏
      */
-    startGame() {
+    startGame(): void {
         this.resetGame();
         this.setState(GAME_CONFIG.GAME_STATES.PLAYING);
     }
@@ -135,7 +139,7 @@ export class GameStateManager {
     /**
      * 暂停游戏
      */
-    pauseGame() {
+    pauseGame(): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.setState(GAME_CONFIG.GAME_STATES.PAUSED);
         }
@@ -144,7 +148,7 @@ export class GameStateManager {
     /**
      * 恢复游戏
      */
-    resumeGame() {
+    resumeGame(): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PAUSED) {
             this.setState(GAME_CONFIG.GAME_STATES.PLAYING);
             if (this.game.audioManager && typeof this.game.audioManager.resumeBackground === 'function') {
@@ -158,7 +162,7 @@ export class GameStateManager {
     /**
      * 切换暂停状态
      */
-    togglePause() {
+    togglePause(): void {
         if (this.game.gameState === GAME_CONFIG.GAME_STATES.PLAYING) {
             this.pauseGame();
         } else if (this.game.gameState === GAME_CONFIG.GAME_STATES.PAUSED) {
@@ -169,21 +173,21 @@ export class GameStateManager {
     /**
      * 游戏结束
      */
-    gameOver() {
+    gameOver(): void {
         this.setState(GAME_CONFIG.GAME_STATES.GAME_OVER);
     }
 
     /**
      * 重新开始游戏
      */
-    restartGame() {
+    restartGame(): void {
         this.startGame();
     }
 
     /**
      * 升级
      */
-    levelUp() {
+    levelUp(): void {
         this.game.level++;
         this.setState(GAME_CONFIG.GAME_STATES.LEVEL_UP);
         
@@ -203,7 +207,7 @@ export class GameStateManager {
     /**
      * 清空屏幕
      */
-    clearScreen() {
+    clearScreen(): void {
         // 清空敌机子弹
         this.game.enemyBullets.length = 0;
         
@@ -222,7 +226,7 @@ export class GameStateManager {
     /**
      * 重置游戏
      */
-    resetGame() {
+    resetGame(): void {
         // 重置游戏变量
         this.game.score = 0;
         this.game.level = 1;
@@ -250,7 +254,7 @@ export class GameStateManager {
     /**
      * 检查并保存最高分
      */
-    checkAndSaveHighScore() {
+    checkAndSaveHighScore(): void {
         const currentHigh = loadHighScore();
         if (this.game.score > currentHigh) {
             saveHighScore(this.game.score);
@@ -264,7 +268,7 @@ export class GameStateManager {
     /**
      * 检查升级条件
      */
-    checkLevelUp() {
+    checkLevelUp(): boolean {
         const requiredKills = this.game.level * 15; // 每级需要击杀的敌机数
         if (this.game.enemiesKilled >= requiredKills) {
             this.levelUp();
@@ -277,7 +281,7 @@ export class GameStateManager {
      * 获取当前状态持续时间
      * @returns {number}
      */
-    getStateDuration() {
+    getStateDuration(): number {
         return Date.now() - this.stateStartTime;
     }
 
@@ -286,7 +290,7 @@ export class GameStateManager {
      * @param {string} action 
      * @returns {boolean}
      */
-    canPerformAction(action) {
+    canPerformAction(action: string): boolean {
         const state = this.game.gameState;
         
         switch (action) {
@@ -314,7 +318,7 @@ export class GameStateManager {
      * 获取状态信息
      * @returns {Object}
      */
-    getStateInfo() {
+    getStateInfo(): object {
         return {
             current: this.game.gameState,
             previous: this.previousState,
@@ -329,7 +333,7 @@ export class GameStateManager {
      * 强制设置状态（调试用）
      * @param {string} state 
      */
-    forceState(state) {
+    forceState(state: string): void {
         this.setState(state);
         console.log(`🔧 强制设置状态: ${state}`);
     }
@@ -337,7 +341,7 @@ export class GameStateManager {
     /**
      * 返回上一个状态
      */
-    returnToPreviousState() {
+    returnToPreviousState(): void {
         if (this.previousState && this.previousState !== this.game.gameState) {
             this.setState(this.previousState);
             console.log(`↩️ 返回到上一状态: ${this.previousState}`);
@@ -349,7 +353,7 @@ export class GameStateManager {
      * @param {string} state 
      * @returns {boolean}
      */
-    isState(state) {
+    isState(state: string): boolean {
         return this.game.gameState === state;
     }
 
@@ -357,7 +361,7 @@ export class GameStateManager {
      * 检查是否是游戏进行状态
      * @returns {boolean}
      */
-    isPlaying() {
+    isPlaying(): boolean {
         return this.isState(GAME_CONFIG.GAME_STATES.PLAYING);
     }
 
@@ -365,7 +369,7 @@ export class GameStateManager {
      * 检查是否是暂停状态
      * @returns {boolean}
      */
-    isPaused() {
+    isPaused(): boolean {
         return this.isState(GAME_CONFIG.GAME_STATES.PAUSED);
     }
 
@@ -373,14 +377,14 @@ export class GameStateManager {
      * 检查是否是游戏结束状态
      * @returns {boolean}
      */
-    isGameOver() {
+    isGameOver(): boolean {
         return this.isState(GAME_CONFIG.GAME_STATES.GAME_OVER);
     }
 
     /**
      * 清理管理器
      */
-    destroy() {
+    destroy(): void {
         this.game = null;
         this.previousState = null;
         console.log('🎮 游戏状态管理器已销毁');

@@ -3,11 +3,29 @@
  * 处理爆炸、闪光等视觉效果
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
+
+interface TrailPoint {
+    x: number;
+    y: number;
+}
 
 // 基础粒子类
 export class Particle {
-    constructor(x, y, vx, vy, life, color, size = 2) {
+    public x: number;
+    public y: number;
+    public vx: number;
+    public vy: number;
+    public life: number;
+    public maxLife: number;
+    public color: string;
+    public size: number;
+    public active: boolean;
+    public gravity: number;
+    public rotation: number;
+    public rotationSpeed: number;
+
+    constructor(x: number, y: number, vx: number, vy: number, life: number, color: string, size: number = 2) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -25,7 +43,7 @@ export class Particle {
     /**
      * 更新粒子状态
      */
-    update() {
+    update(): void {
         this.x += this.vx;
         this.y += this.vy;
         this.vy += this.gravity;
@@ -39,9 +57,9 @@ export class Particle {
 
     /**
      * 渲染粒子
-     * @param {CanvasRenderingContext2D} ctx
+     * @param ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         if (!this.active) return;
 
         const alpha = this.life / this.maxLife;
@@ -62,11 +80,11 @@ export class Particle {
 
 // 圆形粒子
 export class CircleParticle extends Particle {
-    constructor(x, y, vx, vy, life, color, size = 3) {
+    constructor(x: number, y: number, vx: number, vy: number, life: number, color: string, size: number = 3) {
         super(x, y, vx, vy, life, color, size);
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         if (!this.active) return;
 
         const alpha = this.life / this.maxLife;
@@ -90,13 +108,16 @@ export class CircleParticle extends Particle {
 
 // 火花粒子（拖尾效果）
 export class SparkParticle extends Particle {
-    constructor(x, y, vx, vy, life, color) {
+    public trail: TrailPoint[];
+    public trailLength: number;
+
+    constructor(x: number, y: number, vx: number, vy: number, life: number, color: string) {
         super(x, y, vx, vy, life, color, 1);
         this.trail = [];
         this.trailLength = 8;
     }
 
-    update() {
+    update(): void {
         // 记录轨迹
         this.trail.push({ x: this.x, y: this.y });
         if (this.trail.length > this.trailLength) {
@@ -106,7 +127,7 @@ export class SparkParticle extends Particle {
         super.update();
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         if (!this.active) return;
 
         const alpha = this.life / this.maxLife;
@@ -148,26 +169,28 @@ export class SparkParticle extends Particle {
 
 // 粒子系统管理器
 export class ParticleSystem {
+    public particles: Particle[];
+
     constructor() {
         this.particles = [];
     }
 
     /**
      * 添加粒子
-     * @param {Particle} particle
+     * @param particle
      */
-    addParticle(particle) {
+    addParticle(particle: Particle): void {
         this.particles.push(particle);
     }
 
     /**
      * 创建爆炸效果
-     * @param {number} x - X坐标
-     * @param {number} y - Y坐标
-     * @param {string} color - 爆炸颜色
-     * @param {number} intensity - 强度（粒子数量倍数）
+     * @param x - X坐标
+     * @param y - Y坐标
+     * @param color - 爆炸颜色
+     * @param intensity - 强度（粒子数量倍数）
      */
-    createExplosion(x, y, color = '#ff6b6b', intensity = 1) {
+    createExplosion(x: number, y: number, color: string = '#ff6b6b', intensity: number = 1): void {
         const particleCount = GAME_CONFIG.PARTICLE.EXPLOSION_COUNT * intensity;
         const sparkCount = GAME_CONFIG.PARTICLE.SPARK_COUNT * intensity;
         
@@ -200,10 +223,10 @@ export class ParticleSystem {
 
     /**
      * 创建Boss爆炸效果
-     * @param {number} x 
-     * @param {number} y 
+     * @param x 
+     * @param y 
      */
-    createBossExplosion(x, y) {
+    createBossExplosion(x: number, y: number): void {
         // 多重爆炸效果
         this.createExplosion(x, y, '#ff3742', 2);
         
@@ -222,10 +245,10 @@ export class ParticleSystem {
 
     /**
      * 创建屏幕震动效果的闪光粒子
-     * @param {number} x 
-     * @param {number} y 
+     * @param x 
+     * @param y 
      */
-    createFlashEffect(x, y) {
+    createFlashEffect(x: number, y: number): void {
         const flashCount = GAME_CONFIG.PARTICLE.FLASH_COUNT;
         
         for (let i = 0; i < flashCount; i++) {
@@ -248,11 +271,11 @@ export class ParticleSystem {
 
     /**
      * 创建道具收集效果
-     * @param {number} x 
-     * @param {number} y 
-     * @param {string} color 
+     * @param x 
+     * @param y 
+     * @param color 
      */
-    createPickupEffect(x, y, color) {
+    createPickupEffect(x: number, y: number, color: string): void {
         for (let i = 0; i < 8; i++) {
             const angle = (Math.PI * 2 * i) / 8;
             const speed = 1 + Math.random() * 2;
@@ -268,11 +291,11 @@ export class ParticleSystem {
 
     /**
      * 创建推进器尾迹效果
-     * @param {number} x 
-     * @param {number} y 
-     * @param {string} color 
+     * @param x 
+     * @param y 
+     * @param color 
      */
-    createThrusterEffect(x, y, color = '#ff6b6b') {
+    createThrusterEffect(x: number, y: number, color: string = '#ff6b6b'): void {
         if (Math.random() < 0.7) { // 70%概率生成尾迹
             const vx = (Math.random() - 0.5) * 2;
             const vy = 3 + Math.random() * 2;
@@ -287,7 +310,7 @@ export class ParticleSystem {
     /**
      * 更新所有粒子
      */
-    update() {
+    update(): void {
         for (let i = this.particles.length - 1; i >= 0; i--) {
             const particle = this.particles[i];
             particle.update();
@@ -300,31 +323,31 @@ export class ParticleSystem {
 
     /**
      * 渲染所有粒子
-     * @param {CanvasRenderingContext2D} ctx
+     * @param ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         this.particles.forEach(particle => particle.render(ctx));
     }
 
     /**
      * 清除所有粒子
      */
-    clear() {
+    clear(): void {
         this.particles = [];
     }
 
     /**
      * 获取粒子数量
-     * @returns {number}
+     * @returns 粒子数量
      */
-    getParticleCount() {
+    getParticleCount(): number {
         return this.particles.length;
     }
 
     /**
      * 销毁粒子系统
      */
-    destroy() {
+    destroy(): void {
         this.clear();
         console.log('✨ 粒子系统已销毁');
     }

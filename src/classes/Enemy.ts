@@ -3,12 +3,37 @@
  * 包含各种类型的敌机：普通、快速、重型、之字形、Boss
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
 import Bullet from './Bullet.js';
+
+interface BulletLike {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    active: boolean;
+}
 
 // 敌机基类
 export class Enemy {
-    constructor(x, y, type = 'normal') {
+    public x: number;
+    public y: number;
+    public type: string;
+    public width: number;
+    public height: number;
+    public hp: number;
+    public maxHp: number;
+    public score: number;
+    public speed: number;
+    public color: string;
+    public active: boolean;
+    public lastShot: number;
+    public shootCooldown: number;
+    public movePattern: string;
+    public zigzagTime: number;
+    public zigzagDirection: number;
+
+    constructor(x: number, y: number, type: string = 'normal') {
         this.x = x;
         this.y = y;
         this.type = type;
@@ -34,11 +59,11 @@ export class Enemy {
 
     /**
      * 更新敌机状态
-     * @param {number} playerX - 玩家X坐标
-     * @param {number} playerY - 玩家Y坐标
-     * @param {Array} enemyBullets - 敌机子弹数组
+     * @param playerX - 玩家X坐标
+     * @param playerY - 玩家Y坐标
+     * @param enemyBullets - 敌机子弹数组
      */
-    update(playerX, playerY, enemyBullets) {
+    update(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         this.move();
         this.tryShoot(playerX, playerY, enemyBullets);
         
@@ -51,17 +76,17 @@ export class Enemy {
     /**
      * 移动方法（子类可重写）
      */
-    move() {
+    move(): void {
         this.y += this.speed;
     }
 
     /**
      * 尝试射击
-     * @param {number} playerX - 玩家X坐标
-     * @param {number} playerY - 玩家Y坐标
-     * @param {Array} enemyBullets - 敌机子弹数组
+     * @param playerX - 玩家X坐标
+     * @param playerY - 玩家Y坐标
+     * @param enemyBullets - 敌机子弹数组
      */
-    tryShoot(playerX, playerY, enemyBullets) {
+    tryShoot(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         const now = Date.now();
         if (now - this.lastShot > this.shootCooldown && this.canShoot(playerX, playerY)) {
             this.shoot(playerX, playerY, enemyBullets);
@@ -71,33 +96,33 @@ export class Enemy {
 
     /**
      * 检查是否可以射击
-     * @param {number} playerX - 玩家X坐标
-     * @param {number} playerY - 玩家Y坐标
-     * @returns {boolean}
+     * @param playerX - 玩家X坐标
+     * @param playerY - 玩家Y坐标
+     * @returns 是否可以射击
      */
-    canShoot(playerX, playerY) {
+    canShoot(playerX: number, playerY: number): boolean {
         // 只有在玩家前方一定范围内才射击
         return Math.abs(this.x - playerX) < 100 && this.y < playerY;
     }
 
     /**
      * 射击方法
-     * @param {number} playerX - 玩家X坐标
-     * @param {number} playerY - 玩家Y坐标
-     * @param {Array} enemyBullets - 敌机子弹数组
+     * @param playerX - 玩家X坐标
+     * @param playerY - 玩家Y坐标
+     * @param enemyBullets - 敌机子弹数组
      */
-    shoot(playerX, playerY, enemyBullets) {
+    shoot(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         const bulletX = this.x + this.width / 2 - 2;
         const bulletY = this.y + this.height;
-        enemyBullets.push(new Bullet(bulletX, bulletY, 4, true));
+        enemyBullets.push(new Bullet(bulletX, bulletY, 4, 'enemy'));
     }
 
     /**
      * 受到伤害
-     * @param {number} damage - 伤害值
-     * @returns {boolean} 是否死亡
+     * @param damage - 伤害值
+     * @returns 是否死亡
      */
-    takeDamage(damage = 1) {
+    takeDamage(damage: number = 1): boolean {
         this.hp -= damage;
         if (this.hp <= 0) {
             this.active = false;
@@ -108,10 +133,10 @@ export class Enemy {
 
     /**
      * 检查与其他对象的碰撞
-     * @param {Object} other - 其他对象
-     * @returns {boolean}
+     * @param other - 其他对象
+     * @returns 是否发生碰撞
      */
-    collidesWith(other) {
+    collidesWith(other: { x: number; y: number; width: number; height: number }): boolean {
         return this.x < other.x + other.width &&
                this.x + this.width > other.x &&
                this.y < other.y + other.height &&
@@ -120,9 +145,9 @@ export class Enemy {
 
     /**
      * 基础渲染方法（子类会重写）
-     * @param {CanvasRenderingContext2D} ctx
+     * @param ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         // 血条显示（对于血量大于1的敌机）
         if (this.maxHp > 1) {
             this.renderHealthBar(ctx);
@@ -131,9 +156,9 @@ export class Enemy {
 
     /**
      * 渲染血条
-     * @param {CanvasRenderingContext2D} ctx
+     * @param ctx
      */
-    renderHealthBar(ctx) {
+    renderHealthBar(ctx: CanvasRenderingContext2D): void {
         const barWidth = this.width;
         const barHeight = 4;
         const barX = this.x;
@@ -153,11 +178,11 @@ export class Enemy {
 
 // 普通敌机
 export class NormalEnemy extends Enemy {
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         super(x, y, 'normal');
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         super.render(ctx);
         
         ctx.save();
@@ -190,12 +215,12 @@ export class NormalEnemy extends Enemy {
 
 // 快速敌机
 export class FastEnemy extends Enemy {
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         super(x, y, 'fast');
         this.shootCooldown = 1500; // 更快的射击速度
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         super.render(ctx);
         
         ctx.save();
@@ -226,22 +251,22 @@ export class FastEnemy extends Enemy {
 
 // 重型敌机
 export class HeavyEnemy extends Enemy {
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         super(x, y, 'heavy');
         this.shootCooldown = 3000; // 较慢的射击速度
     }
 
-    shoot(playerX, playerY, enemyBullets) {
+    shoot(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         // 双管射击
         const leftX = this.x + 8 - 2;
         const rightX = this.x + this.width - 8 - 2;
         const bulletY = this.y + this.height;
         
-        enemyBullets.push(new Bullet(leftX, bulletY, 3, true));
-        enemyBullets.push(new Bullet(rightX, bulletY, 3, true));
+        enemyBullets.push(new Bullet(leftX, bulletY, 3, 'enemy'));
+        enemyBullets.push(new Bullet(rightX, bulletY, 3, 'enemy'));
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         super.render(ctx);
         
         ctx.save();
@@ -276,13 +301,13 @@ export class HeavyEnemy extends Enemy {
 
 // 之字形敌机
 export class ZigzagEnemy extends Enemy {
-    constructor(x, y) {
+    constructor(x: number, y: number) {
         super(x, y, 'zigzag');
         this.movePattern = 'zigzag';
         this.shootCooldown = 2500;
     }
 
-    move() {
+    move(): void {
         // 之字形移动
         this.y += this.speed;
         this.zigzagTime += 0.1;
@@ -294,7 +319,7 @@ export class ZigzagEnemy extends Enemy {
         }
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         super.render(ctx);
         
         ctx.save();
@@ -328,7 +353,10 @@ export class ZigzagEnemy extends Enemy {
 
 // Boss敌机
 export class BossEnemy extends Enemy {
-    constructor(x, y) {
+    public lastSpecialAttack: number;
+    public specialAttackCooldown: number;
+
+    constructor(x: number, y: number) {
         super(x, y, 'boss');
         this.speed = 1; // Boss移动较慢
         this.shootCooldown = 1000; // 频繁射击
@@ -336,17 +364,17 @@ export class BossEnemy extends Enemy {
         this.specialAttackCooldown = 5000; // 5秒特殊攻击
     }
 
-    shoot(playerX, playerY, enemyBullets) {
+    shoot(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         // 多管齐射
         const positions = [-15, -5, 5, 15];
         const centerX = this.x + this.width / 2;
         
         positions.forEach(offset => {
-            enemyBullets.push(new Bullet(centerX + offset - 2, this.y + this.height, 5, true));
+            enemyBullets.push(new Bullet(centerX + offset - 2, this.y + this.height, 5, 'enemy'));
         });
     }
 
-    tryShoot(playerX, playerY, enemyBullets) {
+    tryShoot(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         super.tryShoot(playerX, playerY, enemyBullets);
         
         // 特殊攻击
@@ -357,7 +385,7 @@ export class BossEnemy extends Enemy {
         }
     }
 
-    specialAttack(playerX, playerY, enemyBullets) {
+    specialAttack(playerX: number, playerY: number, enemyBullets: BulletLike[]): void {
         // 扇形弹幕攻击
         const centerX = this.x + this.width / 2;
         const angles = [-30, -15, 0, 15, 30];
@@ -367,10 +395,10 @@ export class BossEnemy extends Enemy {
             const speedX = Math.sin(radians) * 3;
             const speedY = Math.cos(radians) * 4;
             
-            const bullet = new Bullet(centerX - 2, this.y + this.height, speedY, true);
-            bullet.speedX = speedX; // 添加横向速度
-            bullet.update = function() {
-                this.x += this.speedX || 0;
+            const bullet = new Bullet(centerX - 2, this.y + this.height, speedY, 'enemy');
+            (bullet as any).speedX = speedX; // 添加横向速度
+            (bullet as any).update = function() {
+                this.x += (this as any).speedX || 0;
                 this.y += this.speedY;
                 if (this.y > GAME_CONFIG.CANVAS.HEIGHT + this.height || 
                     this.x < -this.width || this.x > GAME_CONFIG.CANVAS.WIDTH) {
@@ -382,7 +410,7 @@ export class BossEnemy extends Enemy {
         });
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D): void {
         super.render(ctx);
         
         ctx.save();

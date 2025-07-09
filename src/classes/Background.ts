@@ -3,14 +3,25 @@
  * 处理动态星空背景效果
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
-import { random } from '../utils/helpers.js';
+import {  GAME_CONFIG  } from '../config/gameConfig.js';
+import {  random  } from '../utils/helpers.js';
 
 /**
  * 星星类
  */
 class Star {
-    constructor(canvas) {
+    public canvas: { width: number; height: number };
+    public x: number;
+    public y: number;
+    public speed: number;
+    public size: number;
+    public brightness: number;
+    public color: string;
+    public type: string;
+    public twinklePhase: number;
+    public twinkleSpeed: number;
+
+    constructor(canvas: { width: number; height: number }) {
         this.canvas = canvas;
         this.reset();
         this.y = random(0, canvas.height); // 初始化时随机分布
@@ -75,7 +86,7 @@ class Star {
      * 渲染星星
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         ctx.save();
 
         let currentBrightness = this.brightness;
@@ -115,7 +126,7 @@ class Star {
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} brightness
      */
-    renderGlow(ctx, brightness) {
+    renderGlow(ctx: CanvasRenderingContext2D, brightness: number) {
         const gradient = ctx.createRadialGradient(
             this.x, this.y, 0,
             this.x, this.y, this.size * 4
@@ -135,7 +146,7 @@ class Star {
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} twinkle
      */
-    renderTwinkle(ctx, twinkle) {
+    renderTwinkle(ctx: CanvasRenderingContext2D, twinkle: number) {
         if (twinkle > 0.7) { // 只在亮度较高时显示光芒
             ctx.strokeStyle = this.color;
             ctx.lineWidth = 1;
@@ -161,7 +172,12 @@ class Star {
  * 背景星空系统
  */
 export class Background {
-    constructor(width, height) {
+    public canvas: { width: number; height: number };
+    public stars: Star[];
+    public nebulaPhase: number;
+    public nebulaSpeed: number;
+
+    constructor(width: number, height: number) {
         this.canvas = { width, height };
         this.stars = [];
         this.initStars();
@@ -196,7 +212,7 @@ export class Background {
      * 渲染背景
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         // 清除画布并设置背景色
         ctx.fillStyle = GAME_CONFIG.CANVAS.BACKGROUND_COLOR;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -212,7 +228,7 @@ export class Background {
      * 渲染星云效果
      * @param {CanvasRenderingContext2D} ctx
      */
-    renderNebula(ctx) {
+    renderNebula(ctx: CanvasRenderingContext2D) {
         // 检查canvas尺寸是否有效
         if (!this.canvas.width || !this.canvas.height || 
             this.canvas.width <= 0 || this.canvas.height <= 0 ||
