@@ -187,7 +187,6 @@ export class NormalEnemy extends Enemy {
         
         ctx.save();
         const centerX = this.x + this.width / 2;
-        const centerY = this.y + this.height / 2;
         
         // 主体（倒三角）
         ctx.fillStyle = this.color;
@@ -270,8 +269,6 @@ export class HeavyEnemy extends Enemy {
         super.render(ctx);
         
         ctx.save();
-        const centerX = this.x + this.width / 2;
-        const centerY = this.y + this.height / 2;
         
         // 主体（方形装甲舰）
         ctx.fillStyle = this.color;
@@ -414,8 +411,8 @@ export class BossEnemy extends Enemy {
         super.render(ctx);
         
         ctx.save();
+        
         const centerX = this.x + this.width / 2;
-        const centerY = this.y + this.height / 2;
         
         // 主要舰体
         ctx.fillStyle = this.color;

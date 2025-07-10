@@ -150,7 +150,7 @@ export class UIManager {
         this.ctx.font = '16px Arial';
         this.ctx.textAlign = 'center';
         
-        instructions.forEach((line, index) => {
+        instructions.forEach((line, _index) => {
             if (line === '') {
                 y += 10;
                 return;

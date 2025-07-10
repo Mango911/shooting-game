@@ -100,13 +100,14 @@ class Star {
                 this.renderGlow(ctx, currentBrightness);
                 break;
             
-            case 'twinkle':
+            case 'twinkle': {
                 // 闪烁星星
                 const twinkle = (Math.sin(this.twinklePhase) + 1) / 2;
                 currentBrightness = this.brightness * (0.3 + twinkle * 0.7);
                 currentSize = this.size * (0.8 + twinkle * 0.4);
                 this.renderTwinkle(ctx, twinkle);
                 break;
+            }
         }
 
         // 设置透明度

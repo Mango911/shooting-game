@@ -4,7 +4,7 @@
  */
 
 import {  GAME_CONFIG  } from '../config/gameConfig.js';
-import Enemy from '../classes/Enemy.js';
+import { Enemy, NormalEnemy, FastEnemy, HeavyEnemy, ZigzagEnemy, BossEnemy } from '../classes/Enemy.js';
 import PowerUp from '../classes/PowerUp.js';
 
 export class SpawnManager {
@@ -137,7 +137,20 @@ export class SpawnManager {
         const x = Math.random() * (this.game.canvas.width - 50);
         const y = -50;
         
-        return new Enemy(x, y, type);
+        switch (type) {
+            case 'normal':
+                return new NormalEnemy(x, y);
+            case 'fast':
+                return new FastEnemy(x, y);
+            case 'heavy':
+                return new HeavyEnemy(x, y);
+            case 'zigzag':
+                return new ZigzagEnemy(x, y);
+            case 'boss':
+                return new BossEnemy(x, y);
+            default:
+                return new NormalEnemy(x, y);
+        }
     }
 
     /**
@@ -164,7 +177,7 @@ export class SpawnManager {
         const x = this.game.canvas.width / 2 - 75;
         const y = -100;
         
-        const boss = new Enemy(x, y, 'boss');
+        const boss = new BossEnemy(x, y);
         this.game.enemies.push(boss);
         
         // Boss出现特效
@@ -232,7 +245,7 @@ export class SpawnManager {
      */
     getPowerUpTypeWeights(): number[] {
         const player = this.game.player;
-        let weights = [20, 20, 20, 20, 20]; // health, shield, rapidFire, doubleShot, multiShot
+        const weights = [20, 20, 20, 20, 20]; // health, shield, rapidFire, doubleShot, multiShot
         
         // 根据玩家状态调整权重
         if (player.health <= 2) {

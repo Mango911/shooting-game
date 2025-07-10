@@ -3,7 +3,6 @@
  * 包含各种辅助功能和通用方法
  */
 
-import { GAME_CONFIG } from '../config/gameConfig.js';
 import type { ScreenShake, EventCallback, IEventEmitter } from '../types/global.js';
 
 // 矩形碰撞检测接口
@@ -183,7 +182,7 @@ export function createScreenShake(intensity: number = 5, duration: number = 300)
     active: boolean; 
 } {
     const startTime = Date.now();
-    let active = true;
+    const active = true;
     
     return {
         x: 0,

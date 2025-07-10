@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏功能测试</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #111;
+            color: #0f0;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #0f0;
+        }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>太空射击游戏功能测试</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        function log(message, pass = true) {
+            const div = document.createElement('div');
+            div.className = `test-result ${pass ? 'pass' : 'fail'}`;
+            div.textContent = `[${pass ? 'PASS' : 'FAIL'}] ${message}`;
+            results.appendChild(div);
+        }
+        
+        async function runTests() {
+            try {
+                // 测试1: 检查游戏模块是否可以加载
+                const gameModule = await import('http://localhost:8000/Game.js');
+                log('游戏模块加载成功');
+                
+                // 测试2: 检查必要的类是否存在
+                const modules = [
+                    { path: '/classes/Player.js', name: 'Player类' },
+                    { path: '/classes/Enemy.js', name: 'Enemy类' },
+                    { path: '/classes/Bullet.js', name: 'Bullet类' },
+                    { path: '/classes/PowerUp.js', name: 'PowerUp类' },
+                    { path: '/managers/SpawnManager.js', name: 'SpawnManager' },
+                    { path: '/managers/InputManager.js', name: 'InputManager' }
+                ];
+                
+                for (const mod of modules) {
+                    try {
+                        await import(`http://localhost:8000${mod.path}`);
+                        log(`${mod.name}加载成功`);
+                    } catch (err) {
+                        log(`${mod.name}加载失败: ${err.message}`, false);
+                    }
+                }
+                
+                // 测试3: 创建Canvas元素
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 600;
+                const ctx = canvas.getContext('2d');
+                
+                if (ctx) {
+                    log('Canvas 2D上下文创建成功');
+                } else {
+                    log('Canvas 2D上下文创建失败', false);
+                }
+                
+                // 测试4: 检查游戏配置
+                const configModule = await import('http://localhost:8000/config/gameConfig.js');
+                if (configModule.GAME_CONFIG) {
+                    log('游戏配置加载成功');
+                    log(`画布尺寸: ${configModule.GAME_CONFIG.CANVAS.WIDTH}x${configModule.GAME_CONFIG.CANVAS.HEIGHT}`);
+                } else {
+                    log('游戏配置加载失败', false);
+                }
+                
+                log('所有测试完成！');
+                
+            } catch (error) {
+                log(`测试过程中发生错误: ${error.message}`, false);
+                console.error(error);
+            }
+        }
+        
+        // 运行测试
+        runTests();
+    </script>
+</body>
+</html>

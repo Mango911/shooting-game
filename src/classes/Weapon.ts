@@ -58,7 +58,7 @@ export class Weapon {
      * @param bullets - 子弹数组
      * @param enemies - 敌机数组（可选）
      */
-    shoot(x: number, y: number, bullets: BulletLike[], enemies?: EnemyLike[]): boolean {
+    shoot(_x: number, _y: number, _bullets: BulletLike[], _enemies?: EnemyLike[]): boolean {
         if (!this.canShoot()) return false;
         
         this.lastShot = Date.now();
@@ -193,7 +193,7 @@ export class LaserWeapon extends Weapon {
         return super.canShoot();
     }
 
-    shoot(x: number, y: number, bullets: BulletLike[], enemies?: EnemyLike[]): boolean {
+    shoot(x: number, y: number, bullets: BulletLike[], _enemies?: EnemyLike[]): boolean {
         const now = Date.now();
         
         if (!this.isCharging) {
@@ -303,7 +303,7 @@ export class PlasmaWeapon extends Weapon {
         return super.canShoot() && this.energy >= this.energyConsumption;
     }
 
-    shoot(x: number, y: number, bullets: BulletLike[], enemies?: EnemyLike[]): boolean {
+    shoot(x: number, y: number, bullets: BulletLike[], _enemies?: EnemyLike[]): boolean {
         if (!this.canShoot()) return false;
         
         this.lastShot = Date.now();

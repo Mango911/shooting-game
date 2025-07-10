@@ -4,7 +4,7 @@
  */
 
 import { GAME_CONFIG } from '../config/gameConfig.js';
-import type { BulletType, ICollidable, IGameObject } from '../types/global.js';
+import type { ICollidable, IGameObject } from '../types/global.js';
 
 interface TrailParticle {
     x: number;
@@ -94,7 +94,6 @@ export class Bullet implements IGameObject, ICollidable {
      * 更新子弹位置和特效
      */
     update(): void {
-        const deltaTime = 16; // 假设60FPS
         
         // 追踪逻辑
         if (this.homing && this.target && this.target.active !== false) {
@@ -185,10 +184,10 @@ export class Bullet implements IGameObject, ICollidable {
 
     /**
      * 处理命中
-     * @param target - 被命中的目标
+     * @param _target - 被命中的目标
      * @returns 是否应该销毁子弹
      */
-    onHit(target: IGameObject): boolean {
+    onHit(_target: IGameObject): boolean {
         this.hitCount++;
         
         if (this.explosive) {

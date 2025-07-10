@@ -31,7 +31,18 @@
       "mcp__puppeteer__puppeteer_fill",
       "mcp__puppeteer__puppeteer_evaluate",
       "Bash(pkill:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "Bash(npm run lint)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(cp:*)",
+      "Bash(python3:*)",
+      "Bash(open http://localhost:8000/)",
+      "Bash(open test-game.html)",
+      "Bash(open /Users/mango/Documents/GitHub/shooting-game/test-game.html)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
