@@ -331,7 +331,8 @@ export class SpawnManager {
      */
     resetSpawnTimers(): void {
         const currentTime = Date.now();
-        this.lastEnemySpawn = currentTime;
+        // 设置为稍早的时间，让敌机可以立即开始生成
+        this.lastEnemySpawn = currentTime - this.enemySpawnRate;
         this.lastPowerUpSpawn = currentTime;
         this.lastBossSpawn = currentTime;
         console.log('⏰ 重置生成计时器');

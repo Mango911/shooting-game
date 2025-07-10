@@ -70,7 +70,7 @@ export const GAME_CONFIG: GameConfig = {
   BULLET: {
     WIDTH: 4,
     HEIGHT: 10,
-    SPEED: -8,
+    SPEED: 8,
     COLOR: '#feca57'
   },
 
