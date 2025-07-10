@@ -64,8 +64,8 @@ export class Game {
         this.canvas.width = GAME_CONFIG.CANVAS.WIDTH;
         this.canvas.height = GAME_CONFIG.CANVAS.HEIGHT;
         
-        // 游戏状态
-        this.gameState = GAME_CONFIG.GAME_STATES.START;
+        // 游戏状态 - 直接开始游戏
+        this.gameState = GAME_CONFIG.GAME_STATES.PLAYING;
         this.score = 0;
         this.level = 1;
         this.enemiesKilled = 0;

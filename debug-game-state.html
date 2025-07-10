@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>游戏状态调试</title>
+    <style>
+        body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border: 1px solid #0f0; }
+        .error { border-color: #f00; color: #f00; }
+    </style>
+</head>
+<body>
+    <h1>游戏状态实时调试</h1>
+    <div id="status"></div>
+    <button onclick="checkGameState()">刷新状态</button>
+    <button onclick="startGame()">强制开始游戏</button>
+    
+    <script>
+        function addStatus(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = `status ${isError ? 'error' : ''}`;
+            div.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+            document.getElementById('status').appendChild(div);
+        }
+        
+        function checkGameState() {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:8000/';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                try {
+                    const game = iframe.contentWindow.game;
+                    if (!game) {
+                        addStatus('❌ 游戏实例未找到', true);
+                        return;
+                    }
+                    
+                    addStatus(`🎮 游戏状态: ${game.gameState}`);
+                    addStatus(`🔄 游戏循环运行: ${game.gameLoopRunning}`);
+                    addStatus(`📊 分数: ${game.score}, 关卡: ${game.level}`);
+                    addStatus(`👾 敌机数量: ${game.enemies.length}`);
+                    addStatus(`🎁 道具数量: ${game.powerUps.length}`);
+                    addStatus(`🔫 子弹数量: ${game.bullets.length}`);
+                    
+                    if (game.spawnManager) {
+                        const now = Date.now();
+                        addStatus(`⏰ 距离上次敌机生成: ${now - game.spawnManager.lastEnemySpawn}ms`);
+                        addStatus(`⚙️ 敌机生成间隔: ${game.spawnManager.enemySpawnRate}ms`);
+                        addStatus(`🎯 应该生成敌机: ${(now - game.spawnManager.lastEnemySpawn) > game.spawnManager.enemySpawnRate}`);
+                    }
+                    
+                    if (game.stateManager) {
+                        addStatus(`🎯 isPlaying(): ${game.stateManager.isPlaying()}`);
+                    }
+                    
+                } catch (error) {
+                    addStatus(`❌ 检查失败: ${error.message}`, true);
+                }
+                
+                document.body.removeChild(iframe);
+            };
+        }
+        
+        function startGame() {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:8000/';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                try {
+                    const game = iframe.contentWindow.game;
+                    if (game && game.stateManager) {
+                        game.stateManager.startGame();
+                        addStatus('🚀 强制启动游戏');
+                        setTimeout(() => checkGameState(), 1000);
+                    }
+                } catch (error) {
+                    addStatus(`❌ 启动失败: ${error.message}`, true);
+                }
+                
+                document.body.removeChild(iframe);
+            };
+        }
+        
+        // 自动检查
+        setTimeout(checkGameState, 2000);
+        setInterval(checkGameState, 10000);
+    </script>
+</body>
+</html>

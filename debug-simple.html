@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>游戏状态简单测试</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="debug"></div>
+    
+    <script type="module">
+        async function testGame() {
+            try {
+                // 直接加载并测试游戏
+                const Game = (await import('http://localhost:8000/Game.js')).default;
+                const canvas = document.getElementById('gameCanvas');
+                const game = new Game(canvas);
+                
+                const debug = document.getElementById('debug');
+                debug.innerHTML = `
+                    <p>游戏创建后状态: ${game.gameState}</p>
+                    <p>调用 game.start() 前...</p>
+                `;
+                
+                // 启动游戏
+                game.start();
+                
+                debug.innerHTML += `
+                    <p>调用 game.start() 后状态: ${game.gameState}</p>
+                    <p>isPlaying(): ${game.stateManager.isPlaying()}</p>
+                    <p>敌机生成间隔: ${game.spawnManager.enemySpawnRate}ms</p>
+                    <p>上次敌机生成: ${game.spawnManager.lastEnemySpawn}</p>
+                    <p>当前时间: ${Date.now()}</p>
+                    <p>距离下次生成: ${game.spawnManager.enemySpawnRate - (Date.now() - game.spawnManager.lastEnemySpawn)}ms</p>
+                `;
+                
+                // 等待一秒后检查敌机
+                setTimeout(() => {
+                    debug.innerHTML += `
+                        <p>等待1秒后...</p>
+                        <p>敌机数量: ${game.enemies.length}</p>
+                        <p>调用一次 spawnManager.update()</p>
+                    `;
+                    
+                    game.spawnManager.update(Date.now());
+                    
+                    debug.innerHTML += `
+                        <p>手动更新后敌机数量: ${game.enemies.length}</p>
+                    `;
+                }, 1000);
+                
+            } catch (error) {
+                document.getElementById('debug').innerHTML = `错误: ${error.message}`;
+                console.error(error);
+            }
+        }
+        
+        testGame();
+    </script>
+</body>
+</html>

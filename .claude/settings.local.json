@@ -43,7 +43,9 @@
       "Bash(open test-game.html)",
       "Bash(open /Users/mango/Documents/GitHub/shooting-game/test-game.html)",
       "Bash(git commit:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(open /Users/mango/Documents/GitHub/shooting-game/debug-game-state.html)",
+      "Bash(open /Users/mango/Documents/GitHub/shooting-game/debug-simple.html)"
     ],
     "deny": []
   }
