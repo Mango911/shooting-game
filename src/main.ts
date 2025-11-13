@@ -39,14 +39,18 @@ function updateLoadingProgress(progress: number, text: string): void {
  */
 function hideLoadingScreen(): void {
     if (loadingScreen) {
-        loadingScreen.style.pointerEvents = 'none';
+        // 立即隐藏加载屏幕的所有属性
         loadingScreen.style.opacity = '0';
         loadingScreen.style.visibility = 'hidden';
+        loadingScreen.style.pointerEvents = 'none';
+        loadingScreen.style.zIndex = '-1';
+
+        // 300ms后彻底移除display，避免占用空间
         setTimeout(() => {
-            if (loadingScreen) {
+            if (loadingScreen && loadingScreen.style) {
                 loadingScreen.style.display = 'none';
             }
-        }, 300);
+        }, 350);
     }
 }
 
@@ -153,34 +157,81 @@ async function preloadResources(): Promise<void> {
 async function initGame(): Promise<void> {
     try {
         console.log('🎮 开始初始化游戏...');
-        
-        // 检查浏览器支持
         updateLoadingProgress(10, '检查浏览器兼容性...');
-        checkBrowserSupport();
-        
+
+        // 检查浏览器支持
+        try {
+            checkBrowserSupport();
+            console.log('✓ 浏览器支持检查通过');
+        } catch (e) {
+            console.error('✗ 浏览器支持检查失败:', e);
+            throw e;
+        }
+
         // 预加载资源
-        await preloadResources();
-        
+        console.log('开始预加载资源...');
+        try {
+            await preloadResources();
+            console.log('✓ 资源预加载完成');
+        } catch (e) {
+            console.error('✗ 资源预加载失败:', e);
+            throw e;
+        }
+
         // 创建游戏实例
-        game = new Game(canvas);
-        
+        console.log('开始创建Game实例...');
+        console.log('Canvas信息:', { width: canvas.width, height: canvas.height });
+        try {
+            game = new Game(canvas);
+            console.log('✓ Game实例创建成功');
+        } catch (e) {
+            console.error('✗ Game实例创建失败:', e);
+            throw e;
+        }
+
         // 设置为全局变量（调试用）
         window.game = game;
-        
+        console.log('✓ 全局变量设置完成');
+
         // 初始化音频控制
-        initAudioControls();
-        
+        console.log('初始化音频控制...');
+        try {
+            initAudioControls();
+            console.log('✓ 音频控制初始化完成');
+        } catch (e) {
+            console.error('✗ 音频控制初始化失败:', e);
+            // 不中断流程，音频失败不影响游戏运行
+        }
+
         // 隐藏加载屏幕
-        hideLoadingScreen();
-        
+        console.log('隐藏加载屏幕...');
+        try {
+            hideLoadingScreen();
+            console.log('✓ 加载屏幕已隐藏');
+        } catch (e) {
+            console.error('✗ 隐藏加载屏幕失败:', e);
+            throw e;
+        }
+
         // 启动游戏循环
-        game.start();
-        
+        console.log('启动游戏循环...');
+        try {
+            game.start();
+            console.log('✓ 游戏循环已启动');
+        } catch (e) {
+            console.error('✗ 启动游戏循环失败:', e);
+            throw e;
+        }
+
         console.log('✅ 游戏初始化成功！');
-        
+
     } catch (error) {
         console.error('❌ 游戏初始化失败:', error);
         const message = error instanceof Error ? error.message : '游戏初始化失败，请刷新页面重试';
+        console.error('错误详情:', message);
+        if (error instanceof Error) {
+            console.error('堆栈:', error.stack);
+        }
         showErrorScreen(message);
     }
 }
@@ -195,8 +246,10 @@ function retryInit(): void {
     if (loadingScreen) {
         loadingScreen.style.display = 'flex';
         loadingScreen.style.opacity = '1';
+        loadingScreen.style.visibility = 'visible';
+        loadingScreen.style.pointerEvents = 'auto';
     }
-    
+
     // 重新初始化
     setTimeout(initGame, 500);
 }
