@@ -39,7 +39,9 @@ function updateLoadingProgress(progress: number, text: string): void {
  */
 function hideLoadingScreen(): void {
     if (loadingScreen) {
+        loadingScreen.style.pointerEvents = 'none';
         loadingScreen.style.opacity = '0';
+        loadingScreen.style.visibility = 'hidden';
         setTimeout(() => {
             if (loadingScreen) {
                 loadingScreen.style.display = 'none';
@@ -140,8 +142,8 @@ async function preloadResources(): Promise<void> {
 
     for (const step of steps) {
         updateLoadingProgress(step.progress, step.text);
-        // 模拟异步加载
-        await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+        // 快速加载
+        await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 100));
     }
 }
 
