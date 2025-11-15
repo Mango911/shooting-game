@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太空射击游戏 - 简化测试版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; font-family: Arial, sans-serif; }
+        
+        #gameCanvas {
+            display: block;
+            background: #0a0e27;
+            margin: 20px auto;
+            border: 2px solid #00ff00;
+        }
+        
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c1633 0%, #1e3799 50%, #4a69bd 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+        
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 20px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #debug {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 500;
+        }
+        
+        .debug-line { margin: 2px 0; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>🚀 游戏加载中...</h2>
+            <p id="loadingText">正在初始化系统</p>
+        </div>
+    </div>
+    
+    <div id="debug"></div>
+    
+    <script type="module">
+        const debugDiv = document.getElementById('debug');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingText = document.getElementById('loadingText');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function log(msg, isError = false) {
+            console.log(msg);
+            const line = document.createElement('div');
+            line.className = `debug-line ${isError ? 'error' : 'success'}`;
+            line.textContent = msg;
+            debugDiv.appendChild(line);
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+        }
+        
+        log('📋 游戏测试初始化开始...');
+        
+        // 测试导入Game模块
+        async function testGame() {
+            try {
+                log('1️⃣ 开始导入Game模块...');
+                const { default: Game } = await import('/dist/Game.js');
+                log('✓ Game模块导入成功');
+                
+                log('2️⃣ 创建Game实例...');
+                const game = new Game(canvas);
+                log('✓ Game实例创建成功');
+                log('✓ 游戏状态: ' + game.gameState);
+                
+                log('3️⃣ 启动游戏...');
+                game.start();
+                log('✓ 游戏启动成功');
+                
+                log('4️⃣ 隐藏加载屏幕...');
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                    log('✓ 加载屏幕已隐藏');
+                }, 500);
+                
+                log('');
+                log('✅ 游戏初始化完成！游戏应该正常运行。', false);
+                
+            } catch (error) {
+                log(`❌ 错误: ${error.message}`, true);
+                log(`堆栈: ${error.stack}`, true);
+            }
+        }
+        
+        // 等待模块加载
+        setTimeout(testGame, 1000);
+    </script>
+</body>
+</html>
